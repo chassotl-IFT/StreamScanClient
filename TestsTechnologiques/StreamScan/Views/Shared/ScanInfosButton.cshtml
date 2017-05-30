@@ -1,0 +1,31 @@
+﻿@using (Ajax.BeginForm("GetInfos", null, new AjaxOptions
+{
+    HttpMethod = "GET",
+    InsertionMode = InsertionMode.Replace,
+    UpdateTargetId = "infos",
+    OnFailure = "InfError",
+    OnSuccess = "InfSuccess",
+    LoadingElementId = "loading-scan"
+}, new { @id = "infosForm" }))
+{
+    @Html.Bootstrap().Submit("Scan !").EnsureFormGroup(false)
+    <img id="loading-scan" src="~/Content/Images/ajax-loader.gif" style="display:none;" />
+    @Html.Bootstrap().ValidationSummary().EnsureFormGroup(false);
+}
+
+<div id="infos"></div>
+
+<script type="text/javascript">
+    function InfError(data) {
+        var html = data.responseText;
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        div = div.firstChild;
+        document.querySelector("#infosForm .text-danger").textContent = div.nextSibling.textContent;
+        document.querySelector("#infos").textContent = "";
+    }
+    function InfSuccess() {
+        document.querySelector("#infosForm .text-danger").textContent = "";
+    }
+</script>
+

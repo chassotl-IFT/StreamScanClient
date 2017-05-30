@@ -1,0 +1,41 @@
+﻿@model StreamScan.ViewModels.ScanViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Scan</h2>
+
+@using (Ajax.BeginForm("GetFacilities", null, new AjaxOptions
+{
+    HttpMethod = "GET",
+    InsertionMode = InsertionMode.Replace,
+    UpdateTargetId = "connection",
+    OnFailure = "EntError",
+    OnSuccess = "EntSuccess"
+}, new { @id = "enterprisesForm" }))
+{
+    @Html.Bootstrap().Select("enterprise", "Enterprise", Model.Enterprises).SetId("enterprisesSelect")
+    @Html.Bootstrap().ValidationSummary();
+    @Html.ValidationMessage("enterprise");
+}
+
+<div id="connection"></div>
+
+<script type="text/javascript">
+    function EntError(data) {
+        var html = data.responseText;
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        div = div.firstChild;
+        document.querySelector("#enterprisesForm .text-danger").textContent = div.nextSibling.textContent;
+        document.querySelector("#connection").textContent = "";
+    }
+    function EntSuccess() {
+        document.querySelector("#enterprisesForm .text-danger").textContent = "";
+    }
+
+    $('#enterprisesSelect').on('change', function () {
+        $("#enterprisesForm").submit();
+    })
+</script>

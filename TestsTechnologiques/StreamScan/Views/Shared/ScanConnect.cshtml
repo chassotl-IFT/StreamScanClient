@@ -1,0 +1,38 @@
+﻿@model  StreamScan.ViewModels.ScanViewModel
+
+@using (Ajax.BeginForm("Connect", null, new AjaxOptions
+{
+    HttpMethod = "GET",
+    InsertionMode = InsertionMode.Replace,
+    UpdateTargetId = "infosButton",
+    OnFailure = "ConError",
+    OnSuccess = "ConSuccess",
+    LoadingElementId = "loading"
+}, new { @id = "connectForm" }))
+{
+    using (var form = @Html.Bootstrap().Form().Begin())
+    {
+        @form.Select("facility", "Facility", Model.Facilities)
+        @form.EditorFor(m => m.MachineAddress)
+        @form.Submit("Connect").EnsureFormGroup(false)
+        <img id="loading" src="~/Content/Images/ajax-loader.gif"
+             style="display:none;" />
+        @form.ValidationSummary().EnsureFormGroup(false)
+    }
+}
+
+<div id="infosButton"></div>
+
+<script type="text/javascript">
+    function ConError(data) {
+        var html = data.responseText;
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        div = div.firstChild;
+        document.querySelector("#connectForm .text-danger").textContent = div.nextSibling.textContent;
+        document.querySelector("#infosButton").textContent = "";
+    }
+    function ConSuccess() {
+        document.querySelector("#connectForm .text-danger").textContent = "";
+    }
+</script>
