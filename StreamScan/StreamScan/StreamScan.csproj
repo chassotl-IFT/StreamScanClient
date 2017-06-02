@@ -177,6 +177,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Constants\Sql\CEnterprises.cs" />
     <Compile Include="Constants\Sql\CFacilities.cs" />
+    <Compile Include="Constants\Sql\CUser.cs" />
     <Compile Include="Constants\Sql\CMachines.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\EnterprisesController.cs" />

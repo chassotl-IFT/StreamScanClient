@@ -4,5 +4,4 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<p>An error occurred during your request.</p>
-<p>Please refresh the page or contact the administrator if the error is still here.</p>
+<p>@TempData["Exception_Message"]</p>

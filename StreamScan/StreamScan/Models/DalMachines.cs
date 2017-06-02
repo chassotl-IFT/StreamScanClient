@@ -39,50 +39,49 @@ namespace StreamScan.Models
         /// </summary>
         /// <param name="facility">L'ID de l'ouvrage</param>
         /// <returns>La liste des machines de l'ouvrage</returns>
-        public List<Info> GetFacilityMachines(int facility)
+public Dictionary<int, Info> GetFacilityMachines(int facility)
+{
+    Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+    parameters.Add("@facility", facility);
+    MySqlReturn sqlR = db.ExecuteQuery(CMachines.GET_FACILITY_MACHINES, parameters);
+    if (sqlR.ErrorMessage != "")
+        throw new Exception(sqlR.ErrorMessage);
+    if (!sqlR.IsOk)
+        return new Dictionary<int, Info>();
+
+    //Dictionary ayant pour clé la PK_System et comme valeur un objet Info 
+    //représentant les propriétés de la machine
+    Dictionary<int, Info> machines = new Dictionary<int, Info>();
+    //On parcours les infos retournées afin de construire une liste d'Info
+    foreach (List<string> line in sqlR.Data)
+    {
+        Info machine = new Info();
+        machine.InfosMachine = new InfosMachine();
+        machine.InfosReseau = new InfosReseau();
+        machine.InfosStreamX = new InfosStx();
+        int pk_system;
+        int sys_property;
+        //On véfifie que les PK soient des INT
+        if (!Int32.TryParse(line[0], out pk_system))
+            throw new Exception($"A database property type is not correct. " +
+                $"Attempted type : INT32 but got {line[0].GetType()}(Value:{line[0]}). " +
+                $"Please contact the administrator.");
+        if (!Int32.TryParse(line[1], out sys_property))
+            throw new Exception($"A database property type is not correct. " +
+                $"Attempted type : INT32 but got {line[1].GetType()}(Value:{line[1]}). " +
+                $"Please contact the administrator.");
+
+        //Si le dictionary contient déjà la machine, alors on la récupère
+        if (machines.ContainsKey(pk_system))
         {
-            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
-            parameters.Add("@facility", facility);
-            MySqlReturn sqlR = db.ExecuteQuery(CMachines.GET_FACILITY_MACHINES, parameters);
-            if (sqlR.ErrorMessage != "")
-                throw new Exception(sqlR.ErrorMessage);
-            if (!sqlR.IsOk)
-                return new List<Info>();
-
-            //Dictionary ayant pour clé la PK_System et comme valeur un objet Info 
-            //représentant les propriétés de la machine
-            Dictionary<int, Info> machines = new Dictionary<int, Info>();
-            //On parcours les infos retournées afin de construire une liste d'Info
-            foreach (List<string> line in sqlR.Data)
-            {
-                Info machine = new Info();
-                machine.InfosMachine = new InfosMachine();
-                machine.InfosReseau = new InfosReseau();
-                machine.InfosStreamX = new InfosStx();
-                int pk_system;
-                int sys_property;
-                //On véfifie que les PK soient des INT
-                if (!Int32.TryParse(line[0], out pk_system))
-                    throw new Exception($"A database property type is not correct. " +
-                        $"Attempted type : INT32 but got {line[0].GetType()}(Value:{line[0]}). " +
-                        $"Please contact the administrator.");
-                if (!Int32.TryParse(line[1], out sys_property))
-                    throw new Exception($"A database property type is not correct. " +
-                        $"Attempted type : INT32 but got {line[1].GetType()}(Value:{line[1]}). " +
-                        $"Please contact the administrator.");
-
-                //Si le dictionary contient déjà la machine, alors on la récupère
-                if (machines.ContainsKey(pk_system))
-                {
-                    machine = machines[pk_system];
-                }
-                //On applique la propriété à l'objet Info
-                machine = HMachines.SetMachineProperty(machine, sys_property, line[2]);
-                machines[pk_system] = machine;
-            }
-            List<Info> r = new List<Info>(machines.Values);
-            return r;
+            machine = machines[pk_system];
         }
+        //On applique la propriété à l'objet Info
+        machine = HMachines.SetMachineProperty(machine, sys_property, line[2]);
+        machines[pk_system] = machine;
+    }
+    return machines;
+}
 
         /// <summary>
         /// Insert la machine donnée dans la base de données
@@ -134,7 +133,7 @@ namespace StreamScan.Models
             Dictionary<int, Object> properties = HMachines.GetMachineProperties(machine);
             foreach (int key in properties.Keys)
             {
-                string property = ""+properties[key];
+                string property = "" + properties[key];
                 parameters = new Dictionary<string, object>();
                 parameters.Add("@systemId", systemId);
                 parameters.Add("@propertyId", key);
@@ -148,20 +147,41 @@ namespace StreamScan.Models
                     return sqlR;
                 }
             }
-            sqlR = db.ExecuteQuery("COMMIT");
-            return new MySqlReturn { IsOk = true};
+            db.ExecuteQuery("COMMIT");
+            return new MySqlReturn { IsOk = true };
         }
 
         /// <summary>
         /// Met à jour la machine dans la base de données
         /// </summary>
-        /// <param name="id">l'ID de la machine à mettre à jour</param>
+        /// <param name="systemId">l'ID de la machine à mettre à jour</param>
         /// <param name="machine">Les infos de la machine</param>
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
-        public MySqlReturn UpdateMachine(int id, Info machine)
+        public MySqlReturn UpdateMachine(int systemId, Info machine)
         {
-            
-            return null;
+            //On démarre la transaction
+            db.ExecuteQuery("SET autocommit = 0");
+            db.ExecuteQuery("START TRANSACTION");
+
+            Dictionary<int, Object> properties = HMachines.GetMachineProperties(machine);
+            foreach (int key in properties.Keys)
+            {
+                string property = "" + properties[key];
+                Dictionary<string, Object> parameters = new Dictionary<string, object>();
+                parameters.Add("@systemId", systemId);
+                parameters.Add("@propertyId", key);
+                parameters.Add("@value", property);
+                MySqlReturn sqlR = db.ExecuteQuery(CMachines.UPDATE_MACHINE, parameters);
+                if (!sqlR.IsOk)
+                {
+                    db.ExecuteQuery("ROLLBACK");
+                    if (sqlR.ErrorMessage == "")
+                        sqlR.ErrorMessage = "An error occured during updating the properties";
+                    return sqlR;
+                }
+            }
+            db.ExecuteQuery("COMMIT");
+            return new MySqlReturn { IsOk = true };
         }
     }
 }

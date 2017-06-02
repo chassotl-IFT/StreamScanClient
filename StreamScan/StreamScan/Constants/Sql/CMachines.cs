@@ -18,13 +18,14 @@ namespace StreamScan.Constants.Sql
 
         public const string LOCK_SYSTEM = "LOCK TABLES T_System WRITE";
 
-        public const string INSERT_MACHINE = "INSERT INTO T_System (FK_Facility) VALUES (@facility)";
+        public const string INSERT_MACHINE = "INSERT INTO T_System (FK_Facility) " +
+                                             "VALUES (@facility)";
 
         public const string GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() FROM T_System";
 
         public const string INSERT_MACHINE_PROPERTIES = "INSERT INTO T_System_Property(FK_System, FK_Property_Label, value) " +
                                                         "VALUES (@systemId, @propertyId, @value)";
 
-        public const string UPDATE_MACHINE = "UPDATE T_System_Property SET FK_Property_Label=@propertyId, value=@value WHERE FK_System=@systemId";
+        public const string UPDATE_MACHINE = "UPDATE T_System_Property SET value=@value WHERE FK_System=@systemId AND FK_Property_Label=@propertyId";
     }
 }

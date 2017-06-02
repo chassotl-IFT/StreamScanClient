@@ -5,6 +5,7 @@ using System.IO;
 using QueriesManager;
 using QueriesManager.Bean;
 using StreamScanCommon.Infos;
+using StreamScan.Constants.Sql;
 
 namespace StreamScan.Models
 {
@@ -31,8 +32,7 @@ namespace StreamScan.Models
             Dictionary<string, Object> parameters = new Dictionary<string, object>();
             parameters.Add("@username", login.Username);
             parameters.Add("@password", login.Password);
-            string sql = "SELECT username FROM T_User WHERE username = @username AND password = @password";
-            MySqlReturn sqlR = db.ExecuteQuery(sql, parameters);
+            MySqlReturn sqlR = db.ExecuteQuery(CUser.LOGIN, parameters);
             if (sqlR.ErrorMessage != "")
                 throw new Exception(sqlR.ErrorMessage);
             return sqlR.IsOk ? sqlR.Data[0][0] : null;
@@ -89,7 +89,7 @@ namespace StreamScan.Models
             return dalMachines.GetEnterpriseMachines(enterprise);
         }
 
-        public List<Info> GetFacilityMachines(int facility)
+        public Dictionary<int, Info> GetFacilityMachines(int facility)
         {
             return dalMachines.GetFacilityMachines(facility);
         }

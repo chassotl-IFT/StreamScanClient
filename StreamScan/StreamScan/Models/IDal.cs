@@ -20,7 +20,7 @@ namespace StreamScan.Models
         MySqlReturn DeleteFacility(int id);
         //Machines
         List<Info> GetEnterpriseMachines(int enterprise);
-        List<Info> GetFacilityMachines(int facility);
+        Dictionary<int, Info> GetFacilityMachines(int facility);
         MySqlReturn InsertMachine(int facility, Info machine);
         MySqlReturn UpdateMachine(int id, Info machine);
     }

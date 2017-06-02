@@ -197,25 +197,29 @@ else
                         using (var head = table.TableHeaderRow().Begin())
                         {
                             @head.TableHeader("")
+                            @head.TableHeader("#")
                             @head.TableHeader("Hostname").SetId("FirstDataCol")
                             @head.TableHeader("IP Address")
                             @head.TableHeader("StreamX Version")
                             @head.TableHeader("Product name")
                         }
-                        foreach (StreamScanCommon.Infos.Info machine in Model.Machines)
+                        foreach (int key in Model.Machines.Keys)
                         {
-                            @table.TableDataRow("", machine.InfosReseau.HostName, machine.InfosReseau.IpAddress,
+                            StreamScanCommon.Infos.Info machine = Model.Machines[key];
+                            @table.TableDataRow("", key, machine.InfosReseau.HostName, machine.InfosReseau.IpAddress,
                            machine.InfosStreamX.Version, $"{machine.InfosMachine.ManufacturerName} {machine.InfosMachine.ProductName}")
                         }
                     }
                     <div style="height:30px;margin-top: 10px;">
-                        @using (var form = Html.Bootstrap().Form("InsertMachine", FormMethod.Post).Begin())
+                        @using (var form = Html.Bootstrap().Form("UpdateMachine", FormMethod.Post).SetId("updateForm").Begin())
                         {
-                            @form.Submit("New machine...").AddStyles(new { @float = "right", @margin_right = "5px" })
+                            @form.ValidationSummary().AddStyle("float","left")
+                            @form.Hidden("machineId").SetId("machineId")
+                            @Html.Bootstrap().Button("Update...").AddStyle("float", "right")
                         }
-                        @using (var form = Html.Bootstrap().Form("UpdateMachine", FormMethod.Post).Begin())
+                        @using (var form = Html.Bootstrap().Form("InsertMachine", FormMethod.Post).HideValidationSummary().Begin())
                         {
-                            @form.Submit("Update...").AddStyle("float", "right")
+                            @form.Submit("New machine...").AddStyles(new { @float = "right", @margin_right = "5px" }).EnsureFormGroup(false)
                         }
                     </div>
                 </div>
@@ -244,6 +248,15 @@ else
                 $("#FirstDataCol").click();
                 $(".mCustomScrollbar").mCustomScrollbar();
             })
+            $('#updateForm button').on('click', function () {
+                if ($('tr.selected td:nth-child(2)').text()) {
+                    $("#machineId").attr("value", $('tr.selected td:nth-child(2)').text());
+                    $('#updateForm').submit();
+                } else {
+                    $("#updateForm .text-danger").text("Please select a machine to update")
+                }
+                    
+            });
         });
     </script>
     <style>

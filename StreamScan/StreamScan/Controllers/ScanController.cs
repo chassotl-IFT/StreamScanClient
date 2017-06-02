@@ -23,6 +23,14 @@ namespace StreamScan.Controllers
 
         public ActionResult Index()
         {
+            /*try
+            {
+            }
+            catch (Exception ex)
+            {
+                TempData["Exception_Message"] = ex.Message;
+                return Redirect("/Error");
+            }*/
             List<Enterprise> enterprises = dal.GetEnterprises();
             Dictionary<string, string> arr = new Dictionary<string, string>();
             arr.Add("Select an enterprise...", "-1");
@@ -74,6 +82,8 @@ namespace StreamScan.Controllers
         public ActionResult GetInfos()
         {
             ClientWCF wcf = (ClientWCF)Session["wcf"];
+            if (wcf == null)
+                throw new Exception("The connection has ended. Please reconnect to the server");
             Object infos = wcf.SendMessage("GetInfos");
             if (infos.GetType() == typeof(string))
                 return PartialView("ScanInfos", new InfosViewModel { Error = (string)infos });
@@ -85,13 +95,38 @@ namespace StreamScan.Controllers
         [HttpPost]
         public ActionResult InsertMachine()
         {
-            int facility = (int)Session["facilityId"];
             Info infos = (Info)Session["infos"];
+            if (infos == null)
+                throw new Exception("The connection has ended. Please reconnect to the server");
+            int facility = (int)Session["facilityId"];
             MySqlReturn sqlR = dal.InsertMachine(facility, infos);
             if (!sqlR.IsOk)
                 TempData["Error"] = sqlR.ErrorMessage;
             else
                 TempData["Message"] = "The machine has been inserted !";
+            return Redirect("/");
+        }
+
+        [HttpPost]
+        public ActionResult UpdateMachine(int? machineId)
+        {
+            Info infos = (Info)Session["infos"];
+            if (infos == null)
+                throw new Exception("The connection has ended. Please reconnect to the server");
+            MySqlReturn sqlR;
+            if (machineId != null)
+            {
+                sqlR = dal.UpdateMachine(machineId.GetValueOrDefault(), infos);
+            }
+            else
+            {
+                sqlR = new MySqlReturn { IsOk = false, ErrorMessage = "Can't update the machine : No machine selected" };
+            }
+
+            if (!sqlR.IsOk)
+                TempData["Error"] = sqlR.ErrorMessage;
+            else
+                TempData["Message"] = "The machine has been updated !";
             return Redirect("/");
         }
     }
