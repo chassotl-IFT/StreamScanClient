@@ -1,0 +1,254 @@
+﻿@model StreamScan.ViewModels.InfosViewModel
+<link rel="stylesheet" href="~/Content/jquery.mCustomScrollbar.min.css" />
+<script src="~/Scripts/jquery.mCustomScrollbar.concat.min.js"></script>
+@if (Model.Infos == null)
+{
+    <div class="text-danger">
+        @Model.Error
+    </div>
+}
+else
+{
+    StreamScanCommon.Infos.InfosStx infosStx = Model.Infos.InfosStreamX;
+    StreamScanCommon.Infos.InfosMachine infosMachine = Model.Infos.InfosMachine;
+    StreamScanCommon.Infos.InfosReseau infosNetwork = Model.Infos.InfosReseau;
+
+    <script>$("#modal_infos").modal()</script>
+
+    <div class="modal fade" id="modal_infos" tabindex="-1" role="dialog" aria-labelledby="modal_infos-label">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal_infos-label">StreamX Machine - Results</h4>
+                </div>
+                <div class="modal-body">
+                    @using (var tabs = Html.Bootstrap().Tabs().Begin())
+                {
+                        @tabs.Tab("StreamX", "#tab-stx").AddAttribute("data-toggle", "tab").SetActive()
+                        @tabs.Tab("Hardware", "#tab-hardware").AddAttribute("data-toggle", "tab")
+                        @tabs.Tab("Software", "#tab-software").AddAttribute("data-toggle", "tab")
+                        @tabs.Tab("Network", "#tab-network").AddAttribute("data-toggle", "tab")
+                    }
+
+                    <div class="tab-content col-md-12" style="float:none;margin-top: 15px;">
+                        <!--######################################## Tab StreamX ########################################-->
+                        <div class="tab-pane fade active in" id="tab-stx">
+                            @using (var row = Html.Bootstrap().GridRow().Begin())
+                            {
+                                @row.GridColumn(3).AddContent(@Html.Bootstrap().Static("Version", infosStx.Version)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(3).AddContent(@Html.Bootstrap().Static("File name", infosStx.Filename)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(3).AddContent(@Html.Bootstrap().Static("First installation date", infosStx.FirstInstallation)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(3).AddContent(@Html.Bootstrap().Static("First installation date", infosStx.LastInstallation)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                            }
+                            @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-top", "20px").Begin())
+                            {
+                            <!-------------------------------------- StreamX Components -------------------------------------->
+                                using (row.GridColumn(6).Begin())
+                                {
+                                    <label for="" class="control-label">StreamX Components</label>
+
+                                    using (var table = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
+                                    {
+                                        <thead>
+                                            <tr>
+                                                <th width="200px">Name</th>
+                                                <th width="100px">Version</th>
+                                                <th>Log(Yes/No)</th>
+                                            </tr>
+                                        </thead>
+                                        using (table.TableDataRow().Begin())
+                                        {
+                                            using (table.TableData().AddStyle("padding", 0).AddAttribute("colspan", 3).Begin())
+                                            {
+                                                <div style="height: 250px;overflow:auto" class="mCustomScrollbar" data-mcs-theme="dark-3">
+                                                    @using (var table2 = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
+                                                    {
+                                                        foreach (StreamScanCommon.Infos.StreamXComponent component in infosStx.StreamXComponents)
+                                                        {
+                                                            using (table.TableDataRow().Begin())
+                                                            {
+                                                                @table.TableData(component.Name).AddStyle("width", "200px")
+                                                                @table.TableData(component.Version).AddStyle("width", "100px")
+                                                                @table.TableData("Yes")
+                                                            }
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                }
+                            <!-------------------------------------- Logs folders -------------------------------------->
+                                using (row.GridColumn(6).Begin())
+                                {
+                                    <label class="control-label">Logs folders</label>
+
+                                    using (var table = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
+                                    {
+                                        @table.TableHeaderRow("Name")
+                                        using (table.TableDataRow().Begin())
+                                        {
+                                            using (table.TableData().AddStyle("padding", 0).Begin())
+                                            {
+                                                <div style="height: 250px;overflow:auto" class="mCustomScrollbar" data-mcs-theme="dark-3">
+                                                    @using (var table2 = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
+                                                    {
+                                                        foreach (string log in infosStx.LogsFolders)
+                                                        {
+                                                            @table2.TableDataRow(log)
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+                        <!--######################################## Tab Hardware ########################################-->
+                        <div class="tab-pane fade" id="tab-hardware">
+                            @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
+                            {
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Manufacturer name", infosMachine.ManufacturerName)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Product name", infosMachine.ProductName)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                            }
+                            @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
+                            {
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Product type", infosMachine.ProductType)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("RAM capacity", $"{infosMachine.Ram}GB")
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                            }
+                            @using (var row = Html.Bootstrap().GridRow().Begin())
+                            {
+                                using (row.GridColumn(12).Begin())
+                                {
+                                    using (var table = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
+                                    {
+                                        @table.TableHeaderRow("Name", "Volume label", "Usage")
+                                        foreach (StreamScanCommon.Infos.CustomDrive drive in infosMachine.CustomDrives)
+                                        {
+                                            @table.TableDataRow(
+                                       drive.Name, drive.VolumeLabel, $"{drive.TotalSize - drive.TotalFreeSpace}GB used of {drive.TotalSize}GB ({drive.TotalFreeSpace}GB free)");
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+                        <!--######################################## Tab Software ########################################-->
+                        <div class="tab-pane fade" id="tab-software">
+                            @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
+                            {
+                                @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("Operating System", infosMachine.ProductNameOs)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("CPU Architecture", infosMachine.CpuArchitecture)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("Edition", infosMachine.Edition)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                            }
+                            @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
+                            {
+                                @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("Platform ID", infosMachine.PlatformID)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("Version", infosMachine.Version)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("ServicePack", infosMachine.ServicePack)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                            }
+                        </div>
+                        <!--######################################## Tab Network ########################################-->
+                        <div class="tab-pane fade" id="tab-network">
+                            @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
+                            {
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Card name", infosNetwork.CardName)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Domain name", infosNetwork.DomainName)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                            }
+                            @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
+                            {
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Hostname", infosNetwork.HostName)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("IP Address", infosNetwork.IpAddress)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                            }
+                            @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
+                            {
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Gateway", infosNetwork.Gateway)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                                @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Subnet mask", infosNetwork.SubnetMask)
+                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
+                            }
+                        </div>
+                    </div>
+                    <div class="tabs-diviser"></div>
+
+                    <div style="margin-bottom:10px;">Select a machine to update :</div>
+
+                    @using (var table = Html.Bootstrap().Table().SetId("machines-table").RemoveCss("table").AddCss("display").AddAttributes(new { @cellspacing = 0, @width = "100%" }).Begin())
+                    {
+                        using (var head = table.TableHeaderRow().Begin())
+                        {
+                            @head.TableHeader("")
+                            @head.TableHeader("Hostname").SetId("FirstDataCol")
+                            @head.TableHeader("IP Address")
+                            @head.TableHeader("StreamX Version")
+                            @head.TableHeader("Product name")
+                        }
+                        foreach (StreamScanCommon.Infos.Info machine in Model.Machines)
+                        {
+                            @table.TableDataRow("", machine.InfosReseau.HostName, machine.InfosReseau.IpAddress,
+                           machine.InfosStreamX.Version, $"{machine.InfosMachine.ManufacturerName} {machine.InfosMachine.ProductName}")
+                        }
+                    }
+                    <div style="height:30px;margin-top: 10px;">
+                        @using (var form = Html.Bootstrap().Form("InsertMachine", FormMethod.Post).Begin())
+                        {
+                            @form.Submit("New machine...").AddStyles(new { @float = "right", @margin_right = "5px" })
+                        }
+                        @using (var form = Html.Bootstrap().Form("UpdateMachine", FormMethod.Post).Begin())
+                        {
+                            @form.Submit("Update...").AddStyle("float", "right")
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var datatable = $('#machines-table').DataTable({
+                "bInfo": false,
+                "scrollY": 200,
+                "scrollX": true,
+                "paging": false,
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                }],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                order: [[1, 'desc']]
+            });
+            $('#modal_infos').on('shown.bs.modal', function () {
+                $("#FirstDataCol").click();
+                $(".mCustomScrollbar").mCustomScrollbar();
+            })
+        });
+    </script>
+    <style>
+        .mCSB_inside > .mCSB_container {
+            margin-right: 0;
+        }
+    </style>
+}

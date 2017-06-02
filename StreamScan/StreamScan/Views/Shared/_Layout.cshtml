@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - StreamScan</title>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryval")
+    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="~/Content/select.dataTables.min.css" />
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.select.min.js"></script>
+    @Styles.Render("~/Content/css")
+</head>
+<body>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <span class="navbar-brand">StreamScan</span>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-left">
+                    @if (Request.IsAuthenticated)
+                    {
+                        <li class="nv-scan">@Html.ActionLink("Scan", "Index", "Scan")</li>
+                        <li class="nv-machines">@Html.ActionLink("StreamX Machines", "Index", "Machines")</li>
+                        <li class="nv-entfac">@Html.ActionLink("Enterprises and facilities", "Index", "Enterprises")</li>
+                    }
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    @if (!Request.IsAuthenticated)
+                    {
+                        <li class="nv-login">@Html.ActionLink("Login", "Index", "Account")</li>
+                    }
+                    else
+                    {
+                        <li class="nav-item dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                @User.Identity.Name <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li> @Html.ActionLink("Logout", "Logout", "Account")</li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content" style="margin-top: 80px;">
+        @if (@TempData["Message"] != null)
+        {
+            @Html.Bootstrap().Alert(AlertState.Success, "" + TempData["Message"])
+        }
+        @if (@TempData["Error"] != null)
+        {
+            @Html.Bootstrap().Alert(AlertState.Danger, "" + TempData["Error"])
+        }
+        <h2>@ViewBag.Title</h2>
+        @RenderBody()
+    </div>
+    <footer>
+        <div class="container">
+            <p class="text-muted">Infoteam - @DateTime.Now.Year</p>
+        </div>
+    </footer>
+</body>
+</html>

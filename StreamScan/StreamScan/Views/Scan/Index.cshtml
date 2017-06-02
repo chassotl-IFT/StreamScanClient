@@ -1,0 +1,39 @@
+﻿@model Dictionary<string, string>
+@{
+    ViewBag.Title = "Scan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row col-md-4">
+@using (Ajax.BeginForm("GetFacilities", null, new AjaxOptions
+{
+    HttpMethod = "GET",
+    InsertionMode = InsertionMode.Replace,
+    UpdateTargetId = "connection",
+    OnFailure = "EntError",
+    OnSuccess = "EntSuccess"
+}, new { @id = "enterprisesForm"}))
+{
+    @Html.Bootstrap().Select("enterprise", "Enterprise", Model).SetId("enterprisesSelect")
+    @Html.Bootstrap().ValidationSummary();
+    @Html.ValidationMessage("enterprise");
+}
+
+<div id="connection"></div>
+</div>
+<script type="text/javascript">
+    function EntError(data) {
+        var html = data.responseText;
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        div = div.firstChild;
+        document.querySelector("#enterprisesForm .text-danger").textContent = div.nextSibling.textContent;
+        document.querySelector("#connection").textContent = "";
+    }
+    function EntSuccess() {
+        document.querySelector("#enterprisesForm .text-danger").textContent = "";
+    }
+
+    $('#enterprisesSelect').on('change', function () {
+        $("#enterprisesForm").submit();
+    })
+</script>

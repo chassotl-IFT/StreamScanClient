@@ -1,0 +1,19 @@
+C:\Users\laurentc\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\bin\Debug\StreamScanConnect.dll.config
+C:\Users\laurentc\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\bin\Debug\StreamScanConnect.dll
+C:\Users\laurentc\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\bin\Debug\StreamScanConnect.pdb
+C:\Users\laurentc\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\obj\Debug\StreamScanConnect.csprojResolveAssemblyReference.cache
+C:\Users\laurentc\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\obj\Debug\StreamScanConnect.dll
+C:\Users\laurentc\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\obj\Debug\StreamScanConnect.pdb
+C:\Users\Laurent\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\bin\Debug\StreamScanConnect.dll.config
+C:\Users\Laurent\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\bin\Debug\StreamScanConnect.dll
+C:\Users\Laurent\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\bin\Debug\StreamScanConnect.pdb
+C:\Users\Laurent\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\obj\Debug\StreamScanConnect.csprojResolveAssemblyReference.cache
+C:\Users\Laurent\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\obj\Debug\StreamScanConnect.dll
+C:\Users\Laurent\Desktop\StreamScan\Client\StreamScanClient\TestClientServeurLib\obj\Debug\StreamScanConnect.pdb
+C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\bin\Debug\StreamScanConnect.dll.config
+C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\bin\Debug\StreamScanConnect.dll
+C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\bin\Debug\StreamScanConnect.pdb
+C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\bin\Debug\StreamScanCommon.dll
+C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\obj\Debug\StreamScanConnect.csprojResolveAssemblyReference.cache
+C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\obj\Debug\StreamScanConnect.dll
+C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\obj\Debug\StreamScanConnect.pdb

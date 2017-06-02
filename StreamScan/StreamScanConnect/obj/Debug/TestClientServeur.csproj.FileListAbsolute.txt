@@ -1,0 +1,26 @@
+C:\Users\laurentc\Documents\Visual Studio 2013\Projects\ClientServer\TestClientServeur\bin\Debug\TestClientServeur.exe.config
+C:\Users\laurentc\Documents\Visual Studio 2013\Projects\ClientServer\TestClientServeur\bin\Debug\TestClientServeur.exe
+C:\Users\laurentc\Documents\Visual Studio 2013\Projects\ClientServer\TestClientServeur\bin\Debug\TestClientServeur.pdb
+C:\Users\laurentc\Documents\Visual Studio 2013\Projects\ClientServer\TestClientServeur\obj\Debug\TestClientServeur.csprojResolveAssemblyReference.cache
+C:\Users\laurentc\Documents\Visual Studio 2013\Projects\ClientServer\TestClientServeur\obj\Debug\TestClientServeur.exe
+C:\Users\laurentc\Documents\Visual Studio 2013\Projects\ClientServer\TestClientServeur\obj\Debug\TestClientServeur.pdb
+C:\Users\laurentc\Documents\Visual Studio 2013\Projects\ClientServer\TestClientServeur\bin\Debug\TestSerializableLib.dll
+C:\Users\laurentc\Documents\Visual Studio 2013\Projects\ClientServer\TestClientServeur\bin\Debug\TestSerializableLib.pdb
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\TestClientServeur.exe.config
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\obj\Debug\TestClientServeur.exe
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\obj\Debug\TestClientServeur.pdb
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\TestClientServeur.exe
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\TestClientServeur.pdb
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\Infos.dll
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\Infos.pdb
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\obj\Debug\TestClientServeur.csprojResolveAssemblyReference.cache
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\StreamMachine.dll
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\StreamCommon.dll
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\StreamFileReader.dll
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\TestSerializableLib.dll
+C:\Users\ADWorksrv\Desktop\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\TestSerializableLib.pdb
+C:\Users\laurentc\Desktop\StreamScan\Serveur\Tests technologiques\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\TestClientServeur.exe.config
+C:\Users\laurentc\Desktop\StreamScan\Serveur\Tests technologiques\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\TestClientServeur.exe
+C:\Users\laurentc\Desktop\StreamScan\Serveur\Tests technologiques\Tests technologiques StreamScan Serveur\TestClientServeur\bin\Debug\TestClientServeur.pdb
+C:\Users\laurentc\Desktop\StreamScan\Serveur\Tests technologiques\Tests technologiques StreamScan Serveur\TestClientServeur\obj\Debug\TestClientServeur.exe
+C:\Users\laurentc\Desktop\StreamScan\Serveur\Tests technologiques\Tests technologiques StreamScan Serveur\TestClientServeur\obj\Debug\TestClientServeur.pdb
