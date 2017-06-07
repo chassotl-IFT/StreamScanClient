@@ -15,12 +15,12 @@ namespace StreamScan.Models
         MySqlReturn DeleteEnterprise(int id);
         //Facilities
         List<Facility> GetFacilities(int enterprise);
-        MySqlReturn InsertFacility(Facility facility);
-        MySqlReturn UpdateFacility(Facility facility);
+        MySqlReturn InsertFacility(Facility facility, int enterprise);
+        MySqlReturn UpdateFacility(Facility facility, int enterprise);
         MySqlReturn DeleteFacility(int id);
         //Machines
-        List<Info> GetEnterpriseMachines(int enterprise);
-        Dictionary<int, Info> GetFacilityMachines(int facility);
+        Dictionary<int, List<Machine>> GetEnterpriseMachines(int enterprise);
+        List<Machine> GetFacilityMachines(int facility);
         MySqlReturn InsertMachine(int facility, Info machine);
         MySqlReturn UpdateMachine(int id, Info machine);
     }

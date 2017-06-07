@@ -32,31 +32,27 @@ namespace StreamScan.Controllers
                 return Redirect("/Error");
             }*/
             List<Enterprise> enterprises = dal.GetEnterprises();
-            Dictionary<string, string> arr = new Dictionary<string, string>();
-            arr.Add("Select an enterprise...", "-1");
+            Dictionary<string, string> cmxEnterprises = new Dictionary<string, string>();
+            cmxEnterprises.Add("Select an enterprise...", "-1");
             foreach (Enterprise enterprise in enterprises)
             {
-                arr.Add(enterprise.Name, "" + enterprise.Id);
+                cmxEnterprises.Add(enterprise.Name, "" + enterprise.Id);
             }
-            return View(arr);
+            return View(cmxEnterprises);
         }
 
-        public ActionResult GetFacilities(int enterprise)
+        public ActionResult GetFacilities(int? enterprise)
         {
             if (enterprise == -1)
                 throw new Exception("Please select an enterprise");
-            if (ModelState.IsValid)
+            List<Facility> facilities = dal.GetFacilities(enterprise.GetValueOrDefault());
+            Dictionary<string, string> cmxFacilities = new Dictionary<string, string>();
+            cmxFacilities.Add("Select a facility...", "-1");
+            foreach (Facility facility in facilities)
             {
-                List<Facility> facilities = dal.GetFacilities(enterprise);
-                Dictionary<string, string> arr = new Dictionary<string, string>();
-                arr.Add("Select a facility...", "-1");
-                foreach (Facility facility in facilities)
-                {
-                    arr.Add(facility.Name, "" + facility.Id);
-                }
-                return PartialView("ScanConnect", new ScanViewModel { Facilities = arr });
+                cmxFacilities.Add(facility.Name, "" + facility.Id);
             }
-            throw new Exception("Please enter correct informations");
+            return PartialView("ScanConnect", new ScanViewModel { Facilities = cmxFacilities });
         }
 
         public ActionResult Connect(int facility, string MachineAddress)
@@ -65,18 +61,14 @@ namespace StreamScan.Controllers
                 throw new Exception("Please select a facility");
             if (MachineAddress == "")
                 throw new Exception("Please enter an address");
-            if (ModelState.IsValid)
-            {
-                Session["facilityId"] = facility;
-                bool ok = ClientWCF.CheckStatus(String.Format("http://{0}:{1}/{2}", MachineAddress, ClientWCF.defaultPort, ClientWCF.defaultServiceName));
-                if (!ok)
-                    throw new Exception("No server has been found to this address");
-                ClientWCF wcf = new ClientWCF();
-                wcf.InitClient(MachineAddress);
-                Session["wcf"] = wcf;
-                return PartialView("ScanInfosButton");
-            }
-            throw new Exception("Please enter correct informations");
+            Session["facilityId"] = facility;
+            bool ok = ClientWCF.CheckStatus(String.Format("http://{0}:{1}/{2}", MachineAddress, ClientWCF.defaultPort, ClientWCF.defaultServiceName));
+            if (!ok)
+                throw new Exception("No server has been found to this address");
+            ClientWCF wcf = new ClientWCF();
+            wcf.InitClient(MachineAddress);
+            Session["wcf"] = wcf;
+            return PartialView("ScanInfosButton");
         }
 
         public ActionResult GetInfos()

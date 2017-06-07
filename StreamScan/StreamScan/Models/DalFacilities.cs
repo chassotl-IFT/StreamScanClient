@@ -27,9 +27,8 @@ namespace StreamScan.Models
         {
             Dictionary<string, Object> parameters = new Dictionary<string, Object>();
             parameters.Add("@enterprise", enterprise);
-            MySqlReturn sqlR = null;
-            sqlR = db.ExecuteQuery(CFacilities.GET_ENTERPRISE_FACILITIES, parameters);
-            if (!sqlR.IsOk && sqlR.ErrorMessage != "")
+            MySqlReturn sqlR = db.ExecuteQuery(CFacilities.GET_ENTERPRISE_FACILITIES, parameters);
+            if (sqlR.ErrorMessage != "")
                 throw new Exception(sqlR.ErrorMessage);
 
             List<Facility> facilities = new List<Facility>();
@@ -52,10 +51,16 @@ namespace StreamScan.Models
         /// </summary>
         /// <param name="facility">L'ouvrage à insérer</param>
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
-        public MySqlReturn InsertFacility(Facility facility)
+        public MySqlReturn InsertFacility(Facility facility, int enterprise)
         {
-
-            return null;
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@name", facility.Name);
+            parameters.Add("@address", facility.Address);
+            parameters.Add("@npa", facility.Npa);
+            parameters.Add("@city", facility.City);
+            parameters.Add("@enterpriseId", enterprise);
+            MySqlReturn sqlR = db.ExecuteQuery(CFacilities.INSERT_FACILITY, parameters);
+            return sqlR;
         }
 
         /// <summary>
@@ -63,10 +68,17 @@ namespace StreamScan.Models
         /// </summary>
         /// <param name="facility">L'ouvrage à mettre à jour</param>
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
-        public MySqlReturn UpdateFacility(Facility facility)
+        public MySqlReturn UpdateFacility(Facility facility, int enterprise)
         {
-
-            return null;
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@facilityId", facility.Id.GetValueOrDefault());
+            parameters.Add("@name", facility.Name);
+            parameters.Add("@address", facility.Address);
+            parameters.Add("@npa", facility.Npa);
+            parameters.Add("@city", facility.City);
+            parameters.Add("@enterpriseId", enterprise);
+            MySqlReturn sqlR = db.ExecuteQuery(CFacilities.UPDATE_FACILITY, parameters);
+            return sqlR;
         }
 
         /// <summary>
@@ -74,10 +86,12 @@ namespace StreamScan.Models
         /// </summary>
         /// <param name="id">L'ID de l'ouvrage</param>
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
-        public MySqlReturn DeleteFacility(int id)
+        public MySqlReturn DeleteFacility(int facility)
         {
-
-            return null;
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@facility", facility);
+            MySqlReturn sqlR = db.ExecuteQuery(CFacilities.DELETE_FACILITY, parameters);
+            return sqlR;
         }
     }
 }

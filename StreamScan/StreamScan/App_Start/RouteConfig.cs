@@ -16,7 +16,7 @@ namespace StreamScan
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{enterprise}/{facility}",
-                defaults: new { controller = "Machines", action = "Index", enterprise = UrlParameter.Optional, facility = UrlParameter.Optional }
+                defaults: new { controller = "Machines", action = "Index", enterprise = "", facility = "" }
             );
         }
     }

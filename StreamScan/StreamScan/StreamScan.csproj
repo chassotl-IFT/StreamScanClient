@@ -198,8 +198,10 @@
     <Compile Include="Models\Facility.cs" />
     <Compile Include="Models\IDal.cs" />
     <Compile Include="Models\Login.cs" />
+    <Compile Include="Models\Machine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\InfosViewModel.cs" />
+    <Compile Include="ViewModels\MachinesViewModel.cs" />
     <Compile Include="ViewModels\ScanViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +213,7 @@
     <Content Include="Views\Shared\ScanConnect.cshtml" />
     <Content Include="Views\Shared\ScanInfos.cshtml" />
     <Content Include="Views\Shared\ScanInfosButton.cshtml" />
+    <Content Include="Views\Shared\MachinesArray.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

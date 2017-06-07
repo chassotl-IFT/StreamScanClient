@@ -1,0 +1,63 @@
+﻿@model StreamScan.ViewModels.MachinesViewModel
+@if (Model.Machines != null)
+{
+    using (var table = Html.Bootstrap().Table().RemoveCss("table").AddCss("display").AddAttributes(new { @cellspacing = 0, @width = "100%" }).SetId("machines-table").Begin())
+    {
+        using (var head = table.TableHeaderRow().SetId("filterrow").Begin())
+        {
+            if (Model.facility != 0)
+            {
+                @head.TableHeader("Facility")
+            }
+            @head.TableHeader("Hostname")
+            @head.TableHeader("IP")
+            @head.TableHeader("StreamX Version")
+            @head.TableHeader("Hard drive")
+        }
+        using (var head = table.TableHeaderRow().Begin())
+        {
+            if (Model.facility == 0)
+            {
+                @head.TableHeader("Facility")
+            }
+            @head.TableHeader("Hostname")
+            @head.TableHeader("IP")
+            @head.TableHeader("StreamX Version")
+            @head.TableHeader("Hard drive")
+        }
+        foreach (int key in Model.Machines.Keys)
+        {
+            List<StreamScan.Models.Machine> machines = Model.Machines[key];
+            foreach (StreamScan.Models.Machine machine in machines)
+            {
+                using (var row = table.TableDataRow().Begin())
+                {
+                    if (Model.facility == 0) {
+                        @row.TableData((Model.CmxFacilities.ToDictionary(m => m.Value))["" + key].Text)
+                    }
+                    @row.TableData(machine.Properties.InfosReseau.HostName)
+                    @row.TableData(machine.Properties.InfosReseau.IpAddress)
+                }
+            }
+        }
+    }
+    <script>
+        $(document).ready(function () {
+            $('#machines-table thead tr#filterrow th').each(function () {
+                var title = $('#machines-table thead th').eq($(this).index()).text();
+                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            });
+
+            // DataTable
+            var table = $('#machines-table').DataTable({ "scrollX": true });
+
+            // Apply the filter
+            $("#machines-table thead input").on('keyup change', function () {
+                table
+                    .column($(this).parent().index() + ':visible')
+                    .search(this.value)
+                    .draw();
+            });
+        });
+    </script>
+}

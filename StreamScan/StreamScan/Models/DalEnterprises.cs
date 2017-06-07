@@ -24,10 +24,8 @@ namespace StreamScan.Models
         /// <returns>La liste des entreprises</returns>
         public List<Enterprise> GetEnterprises()
         {
-            MySqlReturn sqlR = null;
-            string sql = CEnterprises.GET_ENTERPRISES;
-            sqlR = db.ExecuteQuery(sql);
-            if (!sqlR.IsOk)
+            MySqlReturn sqlR = db.ExecuteQuery(CEnterprises.GET_ENTERPRISES);
+            if (sqlR.ErrorMessage != "")
                 throw new Exception(sqlR.ErrorMessage);
 
             List<Enterprise> enterprises = new List<Enterprise>();
@@ -47,25 +45,19 @@ namespace StreamScan.Models
         }
 
         /// <summary>
-        /// Supprime l'entreprise dont l'ID est spécifié
-        /// </summary>
-        /// <param name="id">L'ID de l'entreprise</param>
-        /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
-        public MySqlReturn DeleteEnterprise(int id)
-        {
-
-            return null;
-        }
-
-        /// <summary>
         /// Insert l'entreptise dans la base de données
         /// </summary>
         /// <param name="enterprise">L'entreprise à insérer</param>
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
         public MySqlReturn InsertEnterprise(Enterprise enterprise)
         {
-
-            return null;
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@name", enterprise.Name);
+            parameters.Add("@address", enterprise.Address);
+            parameters.Add("@npa", enterprise.Npa);
+            parameters.Add("@city", enterprise.City);
+            MySqlReturn sqlR = db.ExecuteQuery(CEnterprises.INSERT_ENTERPRISE, parameters);
+            return sqlR;
         }
 
         /// <summary>
@@ -75,8 +67,27 @@ namespace StreamScan.Models
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
         public MySqlReturn UpdateEnterprise(Enterprise enterprise)
         {
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@enterpriseId", enterprise.Id.GetValueOrDefault());
+            parameters.Add("@name", enterprise.Name);
+            parameters.Add("@address", enterprise.Address);
+            parameters.Add("@npa", enterprise.Npa);
+            parameters.Add("@city", enterprise.City);
+            MySqlReturn sqlR = db.ExecuteQuery(CEnterprises.UPDATE_ENTERPRISE, parameters);
+            return sqlR;
+        }
 
-            return null;
+        /// <summary>
+        /// Supprime l'entreprise dont l'ID est spécifié
+        /// </summary>
+        /// <param name="id">L'ID de l'entreprise</param>
+        /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
+        public MySqlReturn DeleteEnterprise(int enterprise)
+        {
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@enterprise", enterprise);
+            MySqlReturn sqlR = db.ExecuteQuery(CEnterprises.DELETE_ENTERPRISE, parameters);
+            return sqlR;
         }
     }
 }

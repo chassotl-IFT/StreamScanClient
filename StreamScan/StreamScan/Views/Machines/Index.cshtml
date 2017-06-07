@@ -1,8 +1,35 @@
-﻿
+﻿@model StreamScan.ViewModels.MachinesViewModel
 @{
     ViewBag.Title = "StreamX Machines";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="row col-md-12">
+    @using (var form = Html.Bootstrap().Form(FormMethod.Get).AddCss(Css.ColMd4).SetId("enterprisesForm").Begin())
+    {
+        @form.SelectFor(m => m.enterprise, Model.CmxEnterprises).SetId("enterprisesSelect")
+        @Html.ValidationMessageFor(m => m.enterprise)
+    }
+    @if (Model.enterprise != 0)
+    {
+        using (var form = Html.Bootstrap().Form(FormMethod.Get).AddCss(Css.ColMd4).SetId("facilitiesForm").Begin())
+        {
+            @form.SelectFor(m => m.facility, Model.CmxFacilities).SetId("facilitiesSelect")
+            @Html.ValidationMessageFor(m => m.facility)
+        }
+        if (Model.enterprise != 0 || Model.facility != 0)
+        {
+            Html.RenderPartial("MachinesArray", this.Model);
+        }
+    }
+</div>
+
 <script>
     document.querySelectorAll(".nv-machines").forEach(function (el) { el.className += " active"; })
+
+    $('#enterprisesSelect').on('change', function () {
+        location = "/Machines/Index/"+$('#enterprisesSelect').val();
+    })
+    $('#facilitiesSelect').on('change', function () {
+        location = "/Machines/Index/" + $('#enterprisesSelect').val() + "/" + $('#facilitiesSelect').val() ;
+    })
 </script>

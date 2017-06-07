@@ -67,14 +67,14 @@ namespace StreamScan.Models
             return dalFacilities.GetFacilities(enterprise);
         }
 
-        public MySqlReturn InsertFacility(Facility facility)
+        public MySqlReturn InsertFacility(Facility facility, int enterprise)
         {
-            return dalFacilities.InsertFacility(facility);
+            return dalFacilities.InsertFacility(facility, enterprise);
         }
 
-        public MySqlReturn UpdateFacility(Facility facility)
+        public MySqlReturn UpdateFacility(Facility facility, int enterprise)
         {
-            return dalFacilities.UpdateFacility(facility);
+            return dalFacilities.UpdateFacility(facility, enterprise);
         }
 
         public MySqlReturn DeleteFacility(int id)
@@ -84,12 +84,12 @@ namespace StreamScan.Models
 
         //------------------------------------ MACHINES -------------------------------------
 
-        public List<Info> GetEnterpriseMachines(int enterprise)
+        public Dictionary<int, List<Machine>> GetEnterpriseMachines(int enterprise)
         {
             return dalMachines.GetEnterpriseMachines(enterprise);
         }
 
-        public Dictionary<int, Info> GetFacilityMachines(int facility)
+        public List<Machine> GetFacilityMachines(int facility)
         {
             return dalMachines.GetFacilityMachines(facility);
         }

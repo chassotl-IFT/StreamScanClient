@@ -74,7 +74,7 @@ else
                                                             {
                                                                 @table.TableData(component.Name).AddStyle("width", "200px")
                                                                 @table.TableData(component.Version).AddStyle("width", "100px")
-                                                                @table.TableData("Yes")
+                                                                @table.TableData("")
                                                             }
                                                         }
                                                     }
@@ -203,11 +203,11 @@ else
                             @head.TableHeader("StreamX Version")
                             @head.TableHeader("Product name")
                         }
-                        foreach (int key in Model.Machines.Keys)
+                        foreach (StreamScan.Models.Machine machine in Model.Machines)
                         {
-                            StreamScanCommon.Infos.Info machine = Model.Machines[key];
-                            @table.TableDataRow("", key, machine.InfosReseau.HostName, machine.InfosReseau.IpAddress,
-                           machine.InfosStreamX.Version, $"{machine.InfosMachine.ManufacturerName} {machine.InfosMachine.ProductName}")
+                            StreamScanCommon.Infos.Info properties = machine.Properties;
+                            @table.TableDataRow("", machine.Id, properties.InfosReseau.HostName, properties.InfosReseau.IpAddress,
+                           properties.InfosStreamX.Version, $"{properties.InfosMachine.ManufacturerName} {properties.InfosMachine.ProductName}")
                         }
                     }
                     <div style="height:30px;margin-top: 10px;">
