@@ -57,6 +57,34 @@ h2 {
 .rm-margins {
     margin: 0;
 }
+
 table table {
     margin-bottom: 0;
+}
+
+.icon-link {
+    font-size: 11pt;
+    text-decoration: none;
+    padding-right: 5px;
+}
+
+.text-button {
+    background: none;
+    line-height: 0;
+    border: 0;
+    padding: 0;
+}
+
+.inline-form {
+    display: inline-flex;
+    height: 0;
+}
+table.dataTable tbody td.select-checkbox:before, table.dataTable tbody td.select-checkbox:after, table.dataTable tbody th.select-checkbox:before, table.dataTable tbody th.select-checkbox:after {
+    position: static;
+    margin-top: 0;
+    margin-left: 0;
+}
+table.dataTable tr.selected td.select-checkbox:after, table.dataTable tr.selected th.select-checkbox:after {
+    margin-top: -17px;
+    margin-left: 2px;
 }

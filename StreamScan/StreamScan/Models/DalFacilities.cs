@@ -35,7 +35,8 @@ namespace StreamScan.Models
             //On parcours les lignes retournées et on construit une liste de Facility
             foreach (List<string> line in sqlR.Data)
             {
-                facilities.Add(new Facility {
+                facilities.Add(new Facility
+                {
                     Id = Int32.Parse(line[0]),
                     Name = line[1],
                     Address = line[2],
@@ -47,18 +48,43 @@ namespace StreamScan.Models
         }
 
         /// <summary>
+        /// Récupère l'ouvrage à l'aide de l'ID spécifié
+        /// </summary>
+        /// <param name="enterprise">L'ID de l'ouvrage</param>
+        /// <returns></returns>
+        public Facility GetFacility(int facility)
+        {
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@facility", facility);
+            MySqlReturn sqlR = db.ExecuteQuery(CFacilities.GET_FACILITY, parameters);
+            if (sqlR.ErrorMessage != "")
+                throw new Exception(sqlR.ErrorMessage);
+
+            Facility facilityObj = new Facility
+            {
+                Id = Int32.Parse(sqlR.Data[0][0]),
+                Name = sqlR.Data[0][1],
+                Address = sqlR.Data[0][2],
+                Npa = Int32.Parse(sqlR.Data[0][3]),
+                City = sqlR.Data[0][4],
+                Fk_Enterprise = Int32.Parse(sqlR.Data[0][5])
+            };
+            return facilityObj;
+        }
+
+        /// <summary>
         /// Insert l'ouvrage dans la base de données
         /// </summary>
         /// <param name="facility">L'ouvrage à insérer</param>
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
-        public MySqlReturn InsertFacility(Facility facility, int enterprise)
+        public MySqlReturn InsertFacility(Facility facility)
         {
             Dictionary<string, Object> parameters = new Dictionary<string, Object>();
             parameters.Add("@name", facility.Name);
             parameters.Add("@address", facility.Address);
             parameters.Add("@npa", facility.Npa);
             parameters.Add("@city", facility.City);
-            parameters.Add("@enterpriseId", enterprise);
+            parameters.Add("@enterpriseId", facility.Fk_Enterprise);
             MySqlReturn sqlR = db.ExecuteQuery(CFacilities.INSERT_FACILITY, parameters);
             return sqlR;
         }
@@ -68,15 +94,14 @@ namespace StreamScan.Models
         /// </summary>
         /// <param name="facility">L'ouvrage à mettre à jour</param>
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
-        public MySqlReturn UpdateFacility(Facility facility, int enterprise)
+        public MySqlReturn UpdateFacility(Facility facility)
         {
             Dictionary<string, Object> parameters = new Dictionary<string, Object>();
-            parameters.Add("@facilityId", facility.Id.GetValueOrDefault());
+            parameters.Add("@facilityId", facility.Id);
             parameters.Add("@name", facility.Name);
             parameters.Add("@address", facility.Address);
             parameters.Add("@npa", facility.Npa);
             parameters.Add("@city", facility.City);
-            parameters.Add("@enterpriseId", enterprise);
             MySqlReturn sqlR = db.ExecuteQuery(CFacilities.UPDATE_FACILITY, parameters);
             return sqlR;
         }

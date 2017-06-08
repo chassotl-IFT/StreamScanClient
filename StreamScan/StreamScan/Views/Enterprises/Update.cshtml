@@ -1,0 +1,20 @@
+﻿@model StreamScan.Models.Enterprise
+@{
+    ViewBag.Title = $"Update enterprise";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (var form = Html.Bootstrap().Form().AddCss(Css.ColMd6, Css.Row).Begin())
+{
+    @form.EditorFor(m => m.Name, true, true).AddLabelCss("required")
+    @form.EditorFor(m => m.Address, true, true).AddLabelCss("required")
+
+    @form.InputFor(m => m.Npa, FormInputType.Number).AddLabelCss("required")
+    @Html.ValidationMessageFor(m => m.Npa)
+    
+    @form.EditorFor(m => m.City, true, true).AddLabelCss("required")
+
+    @form.Submit("Update").EnsureFormGroup(false);
+
+    @Html.Bootstrap().LinkButton("Cancel", "/Enterprises/Index").RemoveCss("btn-default")
+}

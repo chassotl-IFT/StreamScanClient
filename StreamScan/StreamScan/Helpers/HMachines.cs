@@ -2,11 +2,18 @@
 using StreamScanCommon.Infos;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace StreamScan.Helpers
 {
+    /// <summary>
+    /// Helper utilisé par la DalMachines afin de définir une propriété sur une machine
+    /// ou extraire les propriétés d'une machine.
+    /// </summary>
     public class HMachines
     {
         /// <summary>
@@ -112,6 +119,22 @@ namespace StreamScan.Helpers
                 { CSystemProperties.NETWORK_SUBNETMASK,        machine.InfosReseau.SubnetMask }
             };
             return properties;
+        }
+
+        public static string ObjectToXml(Object obj)
+        {
+            XmlSerializer xsSubmit = new XmlSerializer(obj.GetType());
+            var xml = "";
+
+            using (var sww = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(sww))
+                {
+                    xsSubmit.Serialize(writer, obj);
+                    xml = sww.ToString();
+                }
+            }
+            return xml;
         }
     }
 }

@@ -1,0 +1,19 @@
+﻿@model StreamScan.ViewModels.NewFacilityViewModel
+@{
+    ViewBag.Title = "New facility";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (var form = Html.Bootstrap().Form("New", "Facilities", FormMethod.Post, new { enterprise = Model.Enterprise }).AddCss(Css.ColMd6, Css.Row).Begin())
+{
+    @form.EditorFor(m => m.Facility.Name, true, true).AddLabelCss("required")
+    @form.EditorFor(m => m.Facility.Address, true, true).AddLabelCss("required")
+
+    @form.InputFor(m => m.Facility.Npa, FormInputType.Number).AddLabelCss("required")
+    @Html.ValidationMessageFor(m => m.Facility.Npa)
+
+    @form.EditorFor(m => m.Facility.City, true, true).AddLabelCss("required")
+    
+
+    @form.Submit("Add");
+}

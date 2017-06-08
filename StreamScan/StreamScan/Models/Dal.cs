@@ -27,6 +27,11 @@ namespace StreamScan.Models
 
         //------------------------------------- ACCOUNT -------------------------------------
         
+        /// <summary>
+        /// Récupère le nom d'utilisateur à l'aide des identifiants donnés
+        /// </summary>
+        /// <param name="login">Les identifiants</param>
+        /// <returns>Le nom d'utilisateur si OK sinon NULL</returns>
         public string Login(Login login)
         {
             Dictionary<string, Object> parameters = new Dictionary<string, object>();
@@ -43,6 +48,11 @@ namespace StreamScan.Models
         public List<Enterprise> GetEnterprises()
         {
             return dalEnterprises.GetEnterprises();
+        }
+
+        public Enterprise GetEnterprise(int enterprise)
+        {
+            return dalEnterprises.GetEnterprise(enterprise);
         }
 
         public MySqlReturn InsertEnterprise(Enterprise enterprise)
@@ -67,14 +77,19 @@ namespace StreamScan.Models
             return dalFacilities.GetFacilities(enterprise);
         }
 
-        public MySqlReturn InsertFacility(Facility facility, int enterprise)
+        public Facility GetFacility(int facility)
         {
-            return dalFacilities.InsertFacility(facility, enterprise);
+            return dalFacilities.GetFacility(facility);
         }
 
-        public MySqlReturn UpdateFacility(Facility facility, int enterprise)
+        public MySqlReturn InsertFacility(Facility facility)
         {
-            return dalFacilities.UpdateFacility(facility, enterprise);
+            return dalFacilities.InsertFacility(facility);
+        }
+
+        public MySqlReturn UpdateFacility(Facility facility)
+        {
+            return dalFacilities.UpdateFacility(facility);
         }
 
         public MySqlReturn DeleteFacility(int id)
@@ -103,7 +118,6 @@ namespace StreamScan.Models
         {
             return dalMachines.UpdateMachine(id, machine);
         }
-
     }
 
 }

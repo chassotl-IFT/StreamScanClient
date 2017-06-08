@@ -66,8 +66,9 @@
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.5.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="QueriesManager">
-      <HintPath>..\..\lib\QueriesManager.dll</HintPath>
+    <Reference Include="QueriesManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\StreamScan\Client\StreamScanClient\QueryLauncher\bin\Debug\QueriesManager.dll</HintPath>
     </Reference>
     <Reference Include="StreamScanCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -200,8 +201,10 @@
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\Machine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\FacilitiesViewModel.cs" />
     <Compile Include="ViewModels\InfosViewModel.cs" />
     <Compile Include="ViewModels\MachinesViewModel.cs" />
+    <Compile Include="ViewModels\NewFacilityViewModel.cs" />
     <Compile Include="ViewModels\ScanViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +217,12 @@
     <Content Include="Views\Shared\ScanInfos.cshtml" />
     <Content Include="Views\Shared\ScanInfosButton.cshtml" />
     <Content Include="Views\Shared\MachinesArray.cshtml" />
+    <Content Include="Views\Facilities\Index.cshtml" />
+    <Content Include="Views\Enterprises\New.cshtml" />
+    <Content Include="Views\Facilities\New.cshtml" />
+    <Content Include="Views\Enterprises\Update.cshtml" />
+    <Content Include="Views\Facilities\Update.cshtml" />
+    <Content Include="Views\Error\AjaxError.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -223,7 +232,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Facilities\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StreamScanConnect\StreamScanConnect.csproj">

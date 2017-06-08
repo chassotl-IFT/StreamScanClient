@@ -13,8 +13,8 @@
 {
     using (var form = @Html.Bootstrap().Form().Begin())
     {
-        @form.Select("facility", "Facility", Model.Facilities)
-        @form.EditorFor(m => m.MachineAddress)
+        @Html.Bootstrap().SelectFor(m => m.facility, Model.CmxFacilities)
+        @form.InputFor(m => m.MachineAddress)
         @form.Submit("Connect").EnsureFormGroup(false)
         <img id="loading" src="~/Content/Images/ajax-loader.gif"
              style="display:none;" />
@@ -25,6 +25,10 @@
 <span id="infosButton"></span>
 
 <script type="text/javascript">
+    /**
+     * Affiche le message de l'exception générée
+     * @@param data La réponse de la requête
+     */
     function ConError(data) {
         var html = data.responseText;
         var div = document.createElement('div');
@@ -33,6 +37,9 @@
         document.querySelector("#connectForm .text-danger").textContent = div.nextSibling.textContent;
         document.querySelector("#infosButton").textContent = "";
     }
+    /**
+     * Supprime le message d'erreur
+     */
     function ConSuccess() {
         document.querySelector("#connectForm .text-danger").textContent = "";
     }

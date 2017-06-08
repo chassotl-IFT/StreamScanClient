@@ -12,7 +12,7 @@ namespace StreamScan.Models
     {
 
         private SqlManager db;
-        
+
         public DalEnterprises(SqlManager db)
         {
             this.db = db;
@@ -45,6 +45,28 @@ namespace StreamScan.Models
         }
 
         /// <summary>
+        /// Récupère l'entreprise à l'aide de l'ID spécifié
+        /// </summary>
+        /// <returns>La liste des entreprises</returns>
+        public Enterprise GetEnterprise(int enterprise)
+        {
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@enterprise", enterprise);
+            MySqlReturn sqlR = db.ExecuteQuery(CEnterprises.GET_ENTERPRISE, parameters);
+            if (sqlR.ErrorMessage != "")
+                throw new Exception(sqlR.ErrorMessage);
+            Enterprise enterpriseObj = new Enterprise
+            {
+                Id = Int32.Parse(sqlR.Data[0][0]),
+                Name = sqlR.Data[0][1],
+                Address = sqlR.Data[0][2],
+                Npa = Int32.Parse(sqlR.Data[0][3]),
+                City = sqlR.Data[0][4]
+            };
+            return enterpriseObj;
+        }
+
+        /// <summary>
         /// Insert l'entreptise dans la base de données
         /// </summary>
         /// <param name="enterprise">L'entreprise à insérer</param>
@@ -68,7 +90,7 @@ namespace StreamScan.Models
         public MySqlReturn UpdateEnterprise(Enterprise enterprise)
         {
             Dictionary<string, Object> parameters = new Dictionary<string, Object>();
-            parameters.Add("@enterpriseId", enterprise.Id.GetValueOrDefault());
+            parameters.Add("@enterpriseId", enterprise.Id);
             parameters.Add("@name", enterprise.Name);
             parameters.Add("@address", enterprise.Address);
             parameters.Add("@npa", enterprise.Npa);

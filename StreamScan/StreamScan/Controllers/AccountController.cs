@@ -18,6 +18,9 @@ namespace StreamScan.Controllers
             dal = new Dal();
         }
 
+        /// <summary>
+        /// Affiche le formulaire de connexion
+        /// </summary>
         public ActionResult Index()
         {
             return View();

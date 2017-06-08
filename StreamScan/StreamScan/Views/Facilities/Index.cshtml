@@ -1,0 +1,64 @@
+﻿@model StreamScan.ViewModels.FacilitiesViewModel
+@{
+    ViewBag.Title = Model.Enterprise.Name + " - Facilities";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    //Sélectionne le bon menu dans la barre de navigation
+    document.querySelectorAll(".nv-entfac").forEach(function (el) { el.className += " active"; })
+</script>
+
+@Html.Bootstrap().LinkButton("Back to enterprises", "Index", "Enterprises").AddStyle("margin-bottom", "10px")
+@Html.Bootstrap().LinkButton("New facility...", "New", "Facilities", new { enterprise = Model.Enterprise.Id }).AddStyle("margin-bottom", "10px")
+@using (var table = Html.Bootstrap().Table().RemoveCss("table").SetId("facilities-table").Begin())
+{
+    @table.TableHeaderRow("Name", "Address", "NPA", "City", "Actions")
+    foreach (StreamScan.Models.Facility facility in Model.Facilities)
+    {
+        using (var row = table.TableDataRow().Begin())
+        {
+            @row.TableData(facility.Name)
+            @row.TableData(facility.Address)
+            @row.TableData(facility.Npa)
+            @row.TableData(facility.City)
+            using (row.TableData().Begin())
+            {
+                @Html.Bootstrap().Link("", "Update", "Facilities", new { enterprise = Model.Enterprise.Id, facility = facility.Id }).SetIcon(Icon.Edit).AddCss("icon-link text-success").AddStyle("text-decoration", "none")
+                @Html.Bootstrap().Link("").SetIcon(Icon.Remove).AddCss("icon-link text-danger").AddAttributes(new { @data_toggle = "modal", @data_target = $"#delete-confirm-{facility.Id}" }).AddStyle("text-decoration", "none")
+            }
+        }
+
+        <div class="modal fade" id="delete-confirm-@facility.Id" tabindex="-1" role="dialog" aria-labelledby="delete-confirm-label">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="delete-confirm-label">Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete this facility ?</p>
+                        <p>All machines contain in it will be deleted.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        @using (Html.Bootstrap().Form("Delete", "Facilities", FormMethod.Post, new { enterprise = Model.Enterprise.Id, facility = facility.Id }).HideValidationSummary().AddCss("inline-form").Begin())
+                        {
+                            @Html.Bootstrap().Button("Delete", ButtonType.Submit).AddCss("btn-danger")
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+}
+<script>
+    $(document).ready(function () {
+        // Initialise la Datatable en désactivant le tri de la colonne des actions
+        var table = $('#facilities-table').DataTable({
+            columnDefs: [
+                { targets: [4], orderable: false }
+            ]
+        });
+    });
+</script>

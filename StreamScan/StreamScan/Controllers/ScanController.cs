@@ -11,6 +11,9 @@ using System.Web.Mvc;
 
 namespace StreamScan.Controllers
 {
+    /// <summary>
+    /// Controller de la page "Scan"
+    /// </summary>
     [Authorize]
     public class ScanController : Controller
     {
@@ -21,61 +24,81 @@ namespace StreamScan.Controllers
             dal = new Dal();
         }
 
+        /// <summary>
+        /// Affiche la page de scan avec la combobox des entreprises
+        /// </summary>
         public ActionResult Index()
         {
-            /*try
-            {
-            }
-            catch (Exception ex)
-            {
-                TempData["Exception_Message"] = ex.Message;
-                return Redirect("/Error");
-            }*/
             List<Enterprise> enterprises = dal.GetEnterprises();
-            Dictionary<string, string> cmxEnterprises = new Dictionary<string, string>();
-            cmxEnterprises.Add("Select an enterprise...", "-1");
-            foreach (Enterprise enterprise in enterprises)
-            {
-                cmxEnterprises.Add(enterprise.Name, "" + enterprise.Id);
-            }
-            return View(cmxEnterprises);
+            enterprises.Insert(0, new Enterprise { Name = "Select an enterprise...", Id = 0 });
+
+            return View(new ScanViewModel { Enterprises = enterprises });
         }
 
-        public ActionResult GetFacilities(int? enterprise)
+        /// <summary>
+        /// Récupère les ouvrages de l'entreprise spécifiée et remplit la combobox 
+        /// avec ceux-ci puis affiche le formulaire de connexion à la machine.
+        /// </summary>
+        /// <param name="enterprise">L'ID de l'entreprise dont on récupère les ouvrages</param>
+        public ActionResult GetFacilities(int enterprise)
         {
-            if (enterprise == -1)
-                throw new Exception("Please select an enterprise");
-            List<Facility> facilities = dal.GetFacilities(enterprise.GetValueOrDefault());
-            Dictionary<string, string> cmxFacilities = new Dictionary<string, string>();
-            cmxFacilities.Add("Select a facility...", "-1");
-            foreach (Facility facility in facilities)
+            if (enterprise == 0)
             {
-                cmxFacilities.Add(facility.Name, "" + facility.Id);
+                //throw new Exception("Please select an enterprise");
+                TempData["Exception_Message"] = "Please select an enterprise";
+                return Redirect("/Error/AjaxError");
             }
-            return PartialView("ScanConnect", new ScanViewModel { Facilities = cmxFacilities });
+            List<Facility> facilities = dal.GetFacilities(enterprise);
+            facilities.Insert(0, new Facility { Name = "Select a facility...", Id = 0 });
+
+            return PartialView("ScanConnect", new ScanViewModel { Facilities = facilities });
         }
 
+        /// <summary>
+        /// Connecte l'utilisateur à la machine dont l'adresse est spécifiée
+        /// </summary>
+        /// <param name="facility">L'ID de l'ouvrage</param>
+        /// <param name="MachineAddress">L'adresse de la machine à laquelle on se connecte</param>
         public ActionResult Connect(int facility, string MachineAddress)
         {
-            if (facility == -1)
-                throw new Exception("Please select a facility");
+            if (facility == 0)
+            {
+                //throw new Exception("Please select a facility");
+                TempData["Exception_Message"] = "Please select a facility";
+                return Redirect("/Error/AjaxError");
+            }
             if (MachineAddress == "")
-                throw new Exception("Please enter an address");
+            {
+                //throw new Exception("Please enter an address");
+                TempData["Exception_Message"] = "Please enter an address";
+                return Redirect("/Error/AjaxError");
+            }
             Session["facilityId"] = facility;
             bool ok = ClientWCF.CheckStatus(String.Format("http://{0}:{1}/{2}", MachineAddress, ClientWCF.defaultPort, ClientWCF.defaultServiceName));
             if (!ok)
-                throw new Exception("No server has been found to this address");
+            {
+               // throw new Exception("No server has been found to this address");
+                TempData["Exception_Message"] = "No server has been found to this address";
+                return Redirect("/Error/AjaxError");
+            }
             ClientWCF wcf = new ClientWCF();
             wcf.InitClient(MachineAddress);
             Session["wcf"] = wcf;
             return PartialView("ScanInfosButton");
         }
 
+        /// <summary>
+        /// Récupère les infos de la machine et les affiche
+        /// </summary>
         public ActionResult GetInfos()
         {
             ClientWCF wcf = (ClientWCF)Session["wcf"];
             if (wcf == null)
-                throw new Exception("The connection has ended. Please reconnect to the server");
+            {
+                //throw new Exception("The connection has ended. Please reconnect to the server");
+                TempData["Exception_Message"] = "The connection has ended. Please reconnect to the server";
+                return Redirect("/Error/AjaxError");
+            }
             Object infos = wcf.SendMessage("GetInfos");
             if (infos.GetType() == typeof(string))
                 return PartialView("ScanInfos", new InfosViewModel { Error = (string)infos });
@@ -84,12 +107,18 @@ namespace StreamScan.Controllers
             return PartialView("ScanInfos", new InfosViewModel { Infos = (Info)infos, Machines = dal.GetFacilityMachines(facility) });
         }
 
+        /// <summary>
+        /// Insert la machine dans la base de données
+        /// </summary>
         [HttpPost]
         public ActionResult InsertMachine()
         {
             Info infos = (Info)Session["infos"];
             if (infos == null)
-                throw new Exception("The connection has ended. Please reconnect to the server");
+            {
+                TempData["Exception_Message"] = "The connection has ended. Please reconnect to the server";
+                return Redirect("/Error");
+            }
             int facility = (int)Session["facilityId"];
             MySqlReturn sqlR = dal.InsertMachine(facility, infos);
             if (!sqlR.IsOk)
@@ -99,12 +128,19 @@ namespace StreamScan.Controllers
             return Redirect("/");
         }
 
+        /// <summary>
+        /// Met à jour la machine dans la base de données
+        /// </summary>
+        /// <param name="machineId">L'ID de la machine</param>
         [HttpPost]
         public ActionResult UpdateMachine(int? machineId)
         {
             Info infos = (Info)Session["infos"];
             if (infos == null)
-                throw new Exception("The connection has ended. Please reconnect to the server");
+            {
+                TempData["Exception_Message"] = "The connection has ended. Please re-scan the machine to update it correctly.";
+                return Redirect("/Error");
+            }
             MySqlReturn sqlR;
             if (machineId != null)
             {

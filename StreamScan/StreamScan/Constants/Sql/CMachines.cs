@@ -16,16 +16,27 @@ namespace StreamScan.Constants.Sql
                                                       "INNER JOIN T_Facility ON T_Facility.PK_Facility = T_System.FK_Facility " +
                                                       "WHERE T_Facility.FK_Enterprise = @enterprise";
 
-        public const string LOCK_SYSTEM = "LOCK TABLES T_System WRITE";
+        public const string GET_MACHINE_VERSION = "SELECT version FROM T_System WHERE PK_System = @systemId";
 
-        public const string INSERT_MACHINE = "INSERT INTO T_System (FK_Facility) " +
-                                             "VALUES (@facility)";
+        public const string LOCK_SYSTEM = "LOCK TABLES T_System WRITE";
 
         public const string GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() FROM T_System";
 
-        public const string INSERT_MACHINE_PROPERTIES = "INSERT INTO T_System_Property(FK_System, FK_Property_Label, value) " +
+        public const string INSERT_MACHINE = "INSERT INTO T_System (FK_Facility, version) " +
+                                             "VALUES (@facility, 1)";
+
+        public const string INSERT_MACHINE_PROPERTIES = "INSERT INTO T_System_Property (FK_System, FK_Property_Label, value) " +
                                                         "VALUES (@systemId, @propertyId, @value)";
 
-        public const string UPDATE_MACHINE = "UPDATE T_System_Property SET value=@value WHERE FK_System=@systemId AND FK_Property_Label=@propertyId";
+        public const string UPDATE_MACHINE = "UPDATE T_System_Property SET value=@value " +
+                                             "WHERE FK_System=@systemId AND FK_Property_Label=@propertyId";
+
+        public const string GET_COMPONENTS = "SELECT PK_Component FROM T_Component WHERE FK_System=@systemId";
+
+        public const string DELETE_COMPONENTS = "DELETE FROM T_Component WHERE FK_System=@systemId";
+
+        public const string INSERT_COMPONENTS = "INSERT INTO T_Component (version, name, log, FK_System) VALUES(@version, @name, @log, @systemId)";
+
+        public const string UPDATE_MACHINE_VERSION = "UPDATE T_System SET version=version+1 WHERE PK_System=@systemId AND version=@version";
     }
 }

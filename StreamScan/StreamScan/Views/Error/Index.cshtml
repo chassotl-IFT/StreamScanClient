@@ -3,5 +3,15 @@
     ViewBag.Title = "Error";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<p>@TempData["Exception_Message"]</p>
+@if (@TempData["Exception_Message"] != "")
+{
+    <h5>Exception Message :</h5>
+    @Html.Bootstrap().Alert(AlertState.Danger, (string)@TempData["Exception_Message"])
+}
+else
+{
+    <p>
+        An unhandled error occurred.<br />
+        Please <a href="mailto:example@example.com?subject=Exception (Global Error)">contact</a> the administrator if this error keep coming.
+    </p>
+}

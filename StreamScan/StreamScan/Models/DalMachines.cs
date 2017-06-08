@@ -31,7 +31,6 @@ namespace StreamScan.Models
         public Dictionary<int, List<Machine>> GetEnterpriseMachines(int enterprise)
         {
             Dictionary<int, List<Machine>> machines = new Dictionary<int, List<Machine>>();
-            db.ExecuteQuery("SET autocomit = 0");
             Dictionary<string, Object> parameters = new Dictionary<string, Object>();
             parameters.Add("@enterprise", enterprise);
             MySqlReturn sqlR = db.ExecuteQuery(CFacilities.GET_ENTERPRISE_FACILITIES, parameters);
@@ -115,27 +114,30 @@ namespace StreamScan.Models
         public MySqlReturn InsertMachine(int facility, Info machine)
         {
             //On démarre la transaction
-            db.ExecuteQuery("SET autocommit = 0");
+            Transaction transaction = db.BeginTransaction();
 
+                #region  [obsolete] Table lock of "T_System"
             //On verrouille en écriture la table "T_System" afin de pouvoir 
             //récupérer plus tard la PK de l'entrée insérée
-            db.ExecuteQuery(CMachines.LOCK_SYSTEM);
+            //db.ExecuteQuery(CMachines.LOCK_SYSTEM);
+            #endregion
 
             //On insert la machine dans la table "T_System"
             Dictionary<string, Object> parameters = new Dictionary<string, Object>();
             parameters.Add("@facility", facility);
-            MySqlReturn sqlR = db.ExecuteQuery(CMachines.INSERT_MACHINE, parameters);
+            MySqlReturn sqlR = transaction.ExecuteQuery(CMachines.INSERT_MACHINE, parameters);
             if (!sqlR.IsOk)
             {
                 //On annule la transaction
-                db.ExecuteQuery("ROLLBACK");
+                transaction.Rollback();
                 if (sqlR.ErrorMessage == "")
                     sqlR.ErrorMessage = "Can't insert the machine into the table \"T_System\"";
                 return sqlR;
             }
 
             //On récupère la dernière PK insérée
-            sqlR = db.ExecuteQuery(CMachines.GET_LAST_INSERT_ID);
+            #region [obsolete] Get last inserted ID by SQL query
+            /*sqlR = db.ExecuteQuery(CMachines.GET_LAST_INSERT_ID);
             if (!sqlR.IsOk)
             {
                 //On annule la transaction
@@ -144,7 +146,9 @@ namespace StreamScan.Models
                     sqlR.ErrorMessage = "Can't get the last inserted ID";
                 return sqlR;
             }
-            string systemId = sqlR.Data[0][0];
+            */
+            #endregion
+            int systemId = sqlR.LastInsertedId;
 
             //On insert chaque propriété de la machine dans la table "T_System_Property"
             Dictionary<int, Object> properties = HMachines.GetMachineProperties(machine);
@@ -155,16 +159,36 @@ namespace StreamScan.Models
                 parameters.Add("@systemId", systemId);
                 parameters.Add("@propertyId", key);
                 parameters.Add("@value", property);
-                sqlR = db.ExecuteQuery(CMachines.INSERT_MACHINE_PROPERTIES, parameters);
+                sqlR = transaction.ExecuteQuery(CMachines.INSERT_MACHINE_PROPERTIES, parameters);
                 if (!sqlR.IsOk)
                 {
-                    db.ExecuteQuery("ROLLBACK");
+                    transaction.Rollback();
                     if (sqlR.ErrorMessage == "")
                         sqlR.ErrorMessage = "An error occured during adding the properties";
                     return sqlR;
                 }
             }
-            db.ExecuteQuery("COMMIT");
+
+            //On insert les composents StreamX
+            foreach (StreamXComponent component in machine.InfosStreamX.StreamXComponents)
+            {
+                parameters = new Dictionary<string, Object>();
+                parameters.Add("@version", component.Version);
+                parameters.Add("@name", component.Name);
+                parameters.Add("@log", 0);
+                parameters.Add("@systemId", systemId);
+                sqlR = transaction.ExecuteQuery(CMachines.INSERT_COMPONENTS, parameters);
+                if (!sqlR.IsOk)
+                {
+                    transaction.Rollback();
+                    if (sqlR.ErrorMessage == "")
+                        sqlR.ErrorMessage = "An error occured during adding the components";
+                    return sqlR;
+                }
+            }
+
+            transaction.Commit();
+            transaction.EndTransaction();
             return new MySqlReturn { IsOk = true };
         }
 
@@ -177,26 +201,79 @@ namespace StreamScan.Models
         public MySqlReturn UpdateMachine(int systemId, Info machine)
         {
             //On démarre la transaction
-            db.ExecuteQuery("SET autocommit = 0");
+            Transaction transaction = db.BeginTransaction();
+
+            //On récupère la version de la machine
+            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
+            parameters.Add("@systemId", systemId);
+            MySqlReturn sqlR = transaction.ExecuteQuery(CMachines.GET_MACHINE_VERSION, parameters);
+
+            int version;
+            if (!Int32.TryParse(sqlR.Data[0][0], out version))
+                return new MySqlReturn
+                {
+                    ErrorMessage = $"A database property type is not correct. " +
+                        $"Attempted type : INT32 but got {sqlR.Data[0][0].GetType()}(Value:{sqlR.Data[0][0]}). " +
+                        $"Please contact the administrator."
+                };
 
             Dictionary<int, Object> properties = HMachines.GetMachineProperties(machine);
             foreach (int key in properties.Keys)
             {
                 string property = "" + properties[key];
-                Dictionary<string, Object> parameters = new Dictionary<string, object>();
+                parameters = new Dictionary<string, object>();
                 parameters.Add("@systemId", systemId);
                 parameters.Add("@propertyId", key);
                 parameters.Add("@value", property);
-                MySqlReturn sqlR = db.ExecuteQuery(CMachines.UPDATE_MACHINE, parameters);
+                sqlR = transaction.ExecuteQuery(CMachines.UPDATE_MACHINE, parameters);
                 if (!sqlR.IsOk)
                 {
-                    db.ExecuteQuery("ROLLBACK");
+                    transaction.Rollback();
                     if (sqlR.ErrorMessage == "")
                         sqlR.ErrorMessage = "An error occured during updating the properties";
                     return sqlR;
                 }
             }
-            db.ExecuteQuery("COMMIT");
+
+            //On supprime les composants StreamX
+            parameters = new Dictionary<string, Object>();
+            parameters.Add("@systemId", systemId);
+            sqlR = transaction.ExecuteQuery(CMachines.DELETE_COMPONENTS, parameters);
+            if (sqlR.ErrorMessage == "")
+                return sqlR;
+
+            //On insert les composents StreamX
+            foreach (StreamXComponent component in machine.InfosStreamX.StreamXComponents)
+            {
+                parameters = new Dictionary<string, Object>();
+                parameters.Add("@version", component.Version);
+                parameters.Add("@name", component.Name);
+                parameters.Add("@log", "");
+                parameters.Add("@systemId", systemId);
+                sqlR = transaction.ExecuteQuery(CMachines.INSERT_COMPONENTS);
+                if (!sqlR.IsOk)
+                {
+                    transaction.Rollback();
+                    if (sqlR.ErrorMessage == "")
+                        sqlR.ErrorMessage = "An error occured during adding the components";
+                    return sqlR;
+                }
+            }
+
+            //Mise à jour de la version de la machine
+            parameters = new Dictionary<string, Object>();
+            parameters.Add("@systemId", systemId);
+            parameters.Add("@version", version);
+            sqlR = transaction.ExecuteQuery(CMachines.UPDATE_MACHINE_VERSION, parameters);
+            if (!sqlR.IsOk)
+            {
+                transaction.Rollback();
+                if (sqlR.ErrorMessage == "")
+                    sqlR.ErrorMessage = "An error occured during adding the components";
+                return sqlR;
+            }
+
+            transaction.Commit();
             return new MySqlReturn { IsOk = true };
         }
     }

@@ -3,19 +3,24 @@
     ViewBag.Title = "StreamX Machines";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script>
+    //Sélectionne le bon menu dans la barre de navigation
+    document.querySelectorAll(".nv-machines").forEach(function (el) { el.className += " active"; })
+</script>
 <div class="row col-md-12">
-    @using (var form = Html.Bootstrap().Form(FormMethod.Get).AddCss(Css.ColMd4).SetId("enterprisesForm").Begin())
+    @using (var form = Html.Bootstrap().Form(FormMethod.Get).AddCss(Css.ColMd4, Css.Row).SetId("enterprisesForm").HideValidationSummary().Begin())
     {
         @form.SelectFor(m => m.enterprise, Model.CmxEnterprises).SetId("enterprisesSelect")
         @Html.ValidationMessageFor(m => m.enterprise)
     }
     @if (Model.enterprise != 0)
     {
-        using (var form = Html.Bootstrap().Form(FormMethod.Get).AddCss(Css.ColMd4).SetId("facilitiesForm").Begin())
+        using (var form = Html.Bootstrap().Form(FormMethod.Get).AddCss(Css.ColMd4).SetId("facilitiesForm").HideValidationSummary().Begin())
         {
             @form.SelectFor(m => m.facility, Model.CmxFacilities).SetId("facilitiesSelect")
             @Html.ValidationMessageFor(m => m.facility)
         }
+
         if (Model.enterprise != 0 || Model.facility != 0)
         {
             Html.RenderPartial("MachinesArray", this.Model);
@@ -24,12 +29,15 @@
 </div>
 
 <script>
-    document.querySelectorAll(".nv-machines").forEach(function (el) { el.className += " active"; })
-
+    // Change l'URL selon la sélection de la combobox des entreprises
     $('#enterprisesSelect').on('change', function () {
-        location = "/Machines/Index/"+$('#enterprisesSelect').val();
+        var enterprise = ($('#enterprisesSelect').val() != 0) ? $('#enterprisesSelect').val() : "";
+        location = "/Machines/Index/" + enterprise;
     })
+    // Change l'URL selon la sélection de la combobox des ouvrages
     $('#facilitiesSelect').on('change', function () {
-        location = "/Machines/Index/" + $('#enterprisesSelect').val() + "/" + $('#facilitiesSelect').val() ;
+        var enterprise = ($('#enterprisesSelect').val() != 0) ? $('#enterprisesSelect').val() : "";
+        var facility = ($('#facilitiesSelect').val() != 0) ? $('#facilitiesSelect').val() : "";
+        location = "/Machines/Index/" + enterprise + "/" + facility;
     })
 </script>

@@ -6,9 +6,16 @@ using System.Web.Mvc;
 
 namespace StreamScanClient.Controllers
 {
+    /// <summary>
+    /// Controller des pages d'erreurs
+    /// </summary>
     public class ErrorController : Controller
     {
         public ActionResult Index()
+        {
+            return View();
+        }
+        public ActionResult AjaxError()
         {
             return View();
         }

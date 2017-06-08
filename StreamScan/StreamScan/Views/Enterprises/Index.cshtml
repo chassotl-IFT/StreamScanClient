@@ -1,305 +1,62 @@
-﻿@model StreamScan.ViewModels.InfosViewModel
+﻿@model List<StreamScan.Models.Enterprise>
 @{
     ViewBag.Title = "Enterprises";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-    List<StreamScanCommon.Infos.StreamXComponent> components = new List<StreamScanCommon.Infos.StreamXComponent>();
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    components.Add(new StreamScanCommon.Infos.StreamXComponent("test component", new DateTime(), new DateTime(), "2.1.1"));
-    StreamScanCommon.Infos.InfosStx infosStx = new StreamScanCommon.Infos.InfosStx();
-
-    StreamScanCommon.Infos.InfosMachine infosMachine = new StreamScanCommon.Infos.InfosMachine();
-
-    infosMachine.ManufacturerName = "DELL";
-    infosMachine.ProductName = "Latitude E6410";
-    infosMachine.ProductType = "NotSpecified";
-    infosMachine.Ram = 8;
-    List<StreamScanCommon.Infos.CustomDrive> cd = new List<StreamScanCommon.Infos.CustomDrive>();
-    cd.Add(new StreamScanCommon.Infos.CustomDrive { Name = "C:\\\\", TotalSize = 1000, VolumeLabel = "Disk1", TotalFreeSpace = 787 });
-    cd.Add(new StreamScanCommon.Infos.CustomDrive { Name = "D:\\\\", TotalSize = 1234, VolumeLabel = "Disk1235", TotalFreeSpace = 476 });
-    cd.Add(new StreamScanCommon.Infos.CustomDrive { Name = "E:\\\\", TotalSize = 1023, VolumeLabel = "Disk135", TotalFreeSpace = 151 });
-    cd.Add(new StreamScanCommon.Infos.CustomDrive { Name = "F:\\\\", TotalSize = 6542, VolumeLabel = "Disk1234", TotalFreeSpace = 838 });
-    cd.Add(new StreamScanCommon.Infos.CustomDrive { Name = "G:\\\\", TotalSize = 2366, VolumeLabel = "Disk12835", TotalFreeSpace = 234 });
-    cd.Add(new StreamScanCommon.Infos.CustomDrive { Name = "H:\\\\", TotalSize = 9346, VolumeLabel = "Disk195", TotalFreeSpace = 666 });
-    cd.Add(new StreamScanCommon.Infos.CustomDrive { Name = "I:\\\\", TotalSize = 7533, VolumeLabel = "Disk15", TotalFreeSpace = 22 });
-    infosMachine.CustomDrives = cd;
-
-    infosMachine.ProductNameOs = "Windows Server 2012";
-    infosMachine.CpuArchitecture = "x64";
-    infosMachine.Edition = "Professionnal";
-    infosMachine.PlatformID = "Win32NT";
-    infosMachine.Version = "6.2.9200.0";
-    infosMachine.ServicePack = "R2";
-
-    StreamScanCommon.Infos.InfosReseau infosNetwork = new StreamScanCommon.Infos.InfosReseau();
-
-    infosNetwork.CardName = "Intel(R) 82574L Gigabit Network Connection";
-    infosNetwork.DomainName = "infoteam.local";
-    infosNetwork.HostName = "IFT-SRV000";
-    infosNetwork.IpAddress = "192.168.151.000";
-    infosNetwork.Gateway = "192.168.151.1";
-    infosNetwork.SubnetMask = "255.255.255.0";
 }
 <script>
+    //Sélectionne le bon menu dans la barre de navigation
     document.querySelectorAll(".nv-entfac").forEach(function (el) { el.className += " active"; })
 </script>
 
-<script>
-    $(document).ready(function () {
-        $("#modal_infos").modal()
-    });</script>
-
-<div class="modal fade" id="modal_infos" tabindex="-1" role="dialog" aria-labelledby="modal_infos-label">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="modal_infos-label">StreamX Machine - Results</h4>
-            </div>
-            <div class="modal-body">
-                @using (var tabs = Html.Bootstrap().Tabs().Begin())
-                {
-                    @tabs.Tab("StreamX", "#tab-stx").AddAttribute("data-toggle", "tab").SetActive()
-                    @tabs.Tab("Hardware", "#tab-hardware").AddAttribute("data-toggle", "tab")
-                    @tabs.Tab("Software", "#tab-software").AddAttribute("data-toggle", "tab")
-                    @tabs.Tab("Network", "#tab-network").AddAttribute("data-toggle", "tab")
-                }
-
-                <div class="tab-content col-md-12" style="float:none;margin-top: 15px;">
-                    <!--######################################## Tab StreamX ########################################-->
-                    <div class="tab-pane fade active in" id="tab-stx">
-                        @using (var row = Html.Bootstrap().GridRow().Begin())
+@Html.Bootstrap().LinkButton("New enterprise...", "/Enterprises/New").AddStyle("margin-bottom", "10px")
+@using (var table = Html.Bootstrap().Table().RemoveCss("table").SetId("enterprises-table").Begin())
+{
+    @table.TableHeaderRow("Name", "Address", "NPA", "City", "Actions")
+    foreach (StreamScan.Models.Enterprise enterprise in Model)
+    {
+        using (var row = table.TableDataRow().Begin())
+        {
+            @row.TableData(enterprise.Name)
+            @row.TableData(enterprise.Address)
+            @row.TableData(enterprise.Npa)
+            @row.TableData(enterprise.City)
+            using (row.TableData().Begin())
+            {
+                @Html.Bootstrap().Link("Show facilities", "Index", "Facilities", new { enterprise = enterprise.Id }).AddStyle("padding-right", "5px")
+                @Html.Bootstrap().Link("", "Update", "Enterprises", new { enterprise = enterprise.Id }).SetIcon(Icon.Edit).AddCss("icon-link text-success").AddStyle("text-decoration", "none")
+                @Html.Bootstrap().Link("").SetIcon(Icon.Remove).AddCss("icon-link text-danger").AddAttributes(new { @data_toggle = "modal", @data_target = $"#delete-confirm-{enterprise.Id}" }).AddStyle("text-decoration", "none")
+            }
+        }
+        <div class="modal fade" id="delete-confirm-@enterprise.Id" tabindex="-1" role="dialog" aria-labelledby="delete-confirm-label">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="delete-confirm-label">Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete this enterprise ?</p>
+                        <p>All facilities and machines contain in it will be deleted.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        @using (Html.Bootstrap().Form("Delete", "Enterprises", FormMethod.Post, new { enterprise = enterprise.Id }).HideValidationSummary().AddCss("inline-form").Begin())
                         {
-                            @row.GridColumn(3).AddContent(@Html.Bootstrap().Static("Version", infosStx.Version)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(3).AddContent(@Html.Bootstrap().Static("File name", infosStx.Filename)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(3).AddContent(@Html.Bootstrap().Static("First installation date", infosStx.FirstInstallation)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(3).AddContent(@Html.Bootstrap().Static("First installation date", infosStx.LastInstallation)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                        }
-                        @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-top", "20px").Begin())
-                        {
-                            <!-------------------------------------- StreamX Components -------------------------------------->
-                            using (row.GridColumn(6).Begin())
-                            {
-                                <label for="" class="control-label">StreamX Components</label>
-
-                                using (var table = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
-                                {
-                                    <thead>
-                                        <tr>
-                                            <th width="200px">Name</th>
-                                            <th width="100px">Version</th>
-                                            <th>Log(Yes/No)</th>
-                                        </tr>
-                                    </thead>
-                                    using (table.TableDataRow().Begin())
-                                    {
-                                        using (table.TableData().AddStyle("padding", 0).AddAttribute("colspan", 3).Begin())
-                                        {
-                                            <div style="height: 250px;overflow:auto" class="mCustomScrollbar" data-mcs-theme="dark-3">
-                                                @using (var table2 = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
-                                                {
-                                                    foreach (StreamScanCommon.Infos.StreamXComponent component in infosStx.StreamXComponents)
-                                                    {
-                                                        using (table.TableDataRow().Begin())
-                                                        {
-                                                            @table.TableData(component.Name).AddStyle("width", "200px")
-                                                            @table.TableData(component.Version).AddStyle("width", "100px")
-                                                            @table.TableData("Yes")
-                                                        }
-                                                    }
-                                                }
-                                            </div>
-                                        }
-                                    }
-                                }
-                            }
-                            <!-------------------------------------- Logs folders -------------------------------------->
-                            using (row.GridColumn(6).Begin())
-                            {
-                                <label class="control-label">Logs folders</label>
-
-                                using (var table = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
-                                {
-                                    @table.TableHeaderRow("Name")
-                                    using (table.TableDataRow().Begin())
-                                    {
-                                        using (table.TableData().AddStyle("padding", 0).Begin())
-                                        {
-                                            <div style="height: 250px;overflow:auto" class="mCustomScrollbar" data-mcs-theme="dark-3">
-                                                @using (var table2 = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
-                                                {
-                                                    @table2.TableDataRow("1aegaeg aeg aeg aeg aeg aeg ")
-                                                    @table2.TableDataRow("2aeg aegaega egea g aeg aegaegaegaaeg")
-                                                    @table2.TableDataRow("1aegaeg aeg aeg aeg aeg aeg ")
-                                                    @table2.TableDataRow("2aeg aegaega egea g aeg aegaegaegaaeg")
-                                                    @table2.TableDataRow("1aegaeg aeg aeg aeg aeg aeg ")
-                                                    @table2.TableDataRow("2aeg aegaega egea g aeg aegaegaegaaeg")
-                                                    @table2.TableDataRow("1aegaeg aeg aeg aeg aeg aeg ")
-                                                    @table2.TableDataRow("2aeg aegaega egea g aeg aegaegaegaaeg")
-                                                    @table2.TableDataRow("1aegaeg aeg aeg aeg aeg aeg ")
-                                                    @table2.TableDataRow("1324aeg aaegaega egea g aeg aegaegaegaaeg")
-                                                }
-                                            </div>
-                                        }
-                                    }
-                                }
-                            }
+                            @Html.Bootstrap().Button("Delete", ButtonType.Submit).AddCss("btn-danger")
                         }
                     </div>
-                    <!--######################################## Tab Hardware ########################################-->
-                    <div class="tab-pane fade" id="tab-hardware">
-                        @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
-                        {
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Manufacturer name", infosMachine.ManufacturerName)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Product name", infosMachine.ProductName)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                        }
-                        @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
-                        {
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Product type", infosMachine.ProductType)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("RAM capacity", $"{infosMachine.Ram}GB")
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                        }
-                        @using (var row = Html.Bootstrap().GridRow().Begin())
-                        {
-                            using (row.GridColumn(12).Begin())
-                            {
-                                using (var table = Html.Bootstrap().Table().SetStyle(TableStyle.Striped).Begin())
-                                {
-                                    @table.TableHeaderRow("Name", "Volume label", "Usage")
-                                    foreach (StreamScanCommon.Infos.CustomDrive drive in infosMachine.CustomDrives)
-                                    {
-                                        @table.TableDataRow(
-                                       drive.Name, drive.VolumeLabel, $"{drive.TotalSize - drive.TotalFreeSpace}GB used of {drive.TotalSize}GB ({drive.TotalFreeSpace}GB free)");
-                                    }
-                                }
-                            }
-                        }
-                    </div>
-                    <!--######################################## Tab Software ########################################-->
-                    <div class="tab-pane fade" id="tab-software">
-                        @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
-                        {
-                            @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("Operating System", infosMachine.ProductNameOs)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("CPU Architecture", infosMachine.CpuArchitecture)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("Edition", infosMachine.Edition)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                        }
-                        @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
-                        {
-                            @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("Platform ID", infosMachine.PlatformID)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("Version", infosMachine.Version)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(4).AddContent(@Html.Bootstrap().Static("ServicePack", infosMachine.ServicePack)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                        }
-                    </div>
-                    <!--######################################## Tab Network ########################################-->
-                    <div class="tab-pane fade" id="tab-network">
-                        @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
-                        {
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Card name", infosNetwork.CardName)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Domain name", infosNetwork.DomainName)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                        }
-                        @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
-                        {
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Hostname", infosNetwork.HostName)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("IP Address", infosNetwork.IpAddress)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                        }
-                        @using (var row = Html.Bootstrap().GridRow().AddStyle("margin-bottom", "10px").Begin())
-                        {
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Gateway", infosNetwork.Gateway)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                            @row.GridColumn(6).AddContent(@Html.Bootstrap().Static("Subnet mask", infosNetwork.SubnetMask)
-                                    .RemoveCss(Css.FormControlStatic).AddCss("rm-margins"))
-                        }
-                    </div>
-                </div>
-                <div class="tabs-diviser"></div>
-
-                <div style="margin-bottom:10px;">Select a machine to update :</div>
-
-                <table id="example" class="display" cellspacing="0" width="100%">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th id="NameCol">Name</th>
-                            <th>Position</th>
-                            <th>Office</th>
-                            <th>Age</th>
-                            <th>Salary</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < 100; i++)
-                        {
-                            <tr>
-                                <td></td>
-                                <td>Tiger Nixon</td>
-                                <td>System Architect</td>
-                                <td>Edinburgh</td>
-                                <td>61</td>
-                                <td>$320,800</td>
-                            </tr>
-                        }
-                        
-                    </tbody>
-                </table>
-                <div style="height:30px;margin-top: 10px;">
-                    @Html.Bootstrap().Button("Update...").AddStyle("float", "right")
-                    @Html.Bootstrap().Button("New machine...").AddStyles(new { @float = "right", @margin_right = "5px" })
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    }
+}
 <script>
     $(document).ready(function () {
-        var datatable = $('#example').DataTable({
-            "bInfo": false,
-            "scrollY": 300,
-            "scrollX": true,
-            "paging": false,
-            columnDefs: [{
-                orderable: false,
-                className: 'select-checkbox',
-                targets: 0
-            }],
-            select: {
-                style: 'os',
-                selector: 'td:first-child'
-            },
-            order: [[1, 'desc']]
+        // Initialise la Datatable en désactivant le tri de la colonne des actions
+        var table = $('#enterprises-table').DataTable({
+            columnDefs: [
+                { targets: [4], orderable: false }
+            ]
         });
-        $('#modal_infos').on('shown.bs.modal', function () {
-            $("#NameCol").click();
-        })
     });
 </script>

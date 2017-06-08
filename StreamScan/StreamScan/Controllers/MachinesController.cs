@@ -9,6 +9,9 @@ using System.Web.Mvc;
 
 namespace StreamScan.Controllers
 {
+    /// <summary>
+    /// Controller de la page "StreamX Machines"
+    /// </summary>
     [Authorize]
     public class MachinesController : Controller
     {
@@ -22,7 +25,11 @@ namespace StreamScan.Controllers
 
         /// <summary>
         /// Affiche la page avec une combobox d'entreprises
+        /// Les paramètres sont nullables car ils ne sont pas obligatoires à l'affichage de la page
         /// </summary>
+        /// <param name="enterprise">L'ID de l'entreprise</param>
+        /// <param name="facility">L'ID de l'ouvrage</param>
+        /// <returns></returns>
         public ActionResult Index(int? enterprise, int? facility)
         {
             int facilityId = facility.GetValueOrDefault();
@@ -31,12 +38,12 @@ namespace StreamScan.Controllers
             MachinesViewModel vm = new MachinesViewModel { enterprise = enterpriseId, facility = facilityId };
 
             List<Enterprise> enterprises = dal.GetEnterprises();
-            enterprises.Insert(0, new Enterprise { Name = "Select an enterprise...", Id = null });
+            enterprises.Insert(0, new Enterprise { Name = "Select an enterprise...", Id = 0 });
             vm.Enterprises = enterprises;
             if (enterpriseId != 0)
             {
                 List<Facility> facilities = dal.GetFacilities(enterpriseId);
-                facilities.Insert(0, new Facility { Name = "Select a facility...", Id = null });
+                facilities.Insert(0, new Facility { Name = "Select a facility...", Id = 0 });
                 vm.Facilities = facilities;
             }
             if (enterpriseId != 0 && facilityId != 0)
@@ -51,32 +58,6 @@ namespace StreamScan.Controllers
             }
 
             return View(vm);
-        }
-        /// <summary>
-        /// Affiche la page avec la liste des ouvrages et des machines de l'entreprise spécifiée
-        /// </summary>
-        /// <param name="enterprise">L'entreprise</param>
-       
-        public ActionResult Enterprises(int enterprise)
-        {
-           /* List<Enterprise> enterprises = dal.GetEnterprises();
-            Dictionary<string, string> cmxEnterprises = new Dictionary<string, string>();
-            cmxEnterprises.Add("Select an enterprise...", "");
-            foreach (Enterprise enterprise in enterprises)
-            {
-                cmxEnterprises.Add(enterprise.Name, "" + enterprise.Id);
-            }
-
-            List<Facility> facilities = dal.GetFacilities(enterprise);
-            Dictionary<string, string> cmxFacilities = new Dictionary<string, string>();
-            cmxFacilities.Add("Select an enterprise...", "");
-            foreach (Facility facility in facilities)
-            {
-                cmxFacilities.Add(facility.Name, "" + facility.Id);
-            }
-            Dictionary<int, List<Machine>> machines = dal.GetEnterpriseMachines(enterprise);*/
-            
-            return View();
         }
     }
 }

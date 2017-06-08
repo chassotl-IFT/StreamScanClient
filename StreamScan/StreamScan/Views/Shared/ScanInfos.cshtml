@@ -3,9 +3,11 @@
 <script src="~/Scripts/jquery.mCustomScrollbar.concat.min.js"></script>
 @if (Model.Infos == null)
 {
+    <p>The machine return an error :</p>
     <div class="text-danger">
         @Model.Error
     </div>
+    <p>Please re-scan the machine to obtain the informations.</p>
 }
 else
 {
@@ -201,19 +203,62 @@ else
                             @head.TableHeader("Hostname").SetId("FirstDataCol")
                             @head.TableHeader("IP Address")
                             @head.TableHeader("StreamX Version")
-                            @head.TableHeader("Product name")
+                            @head.TableHeader("Hard Drive")
+                            @head.TableHeader("StreamX FileName")
+                            @head.TableHeader("StreamX First Installation Date")
+                            @head.TableHeader("StreamX Last Installation Date")
+                            @head.TableHeader("StreamX Components")
+                            @head.TableHeader("StreamX Logs Folders")
+                            @head.TableHeader("Manufacturer Name")
+                            @head.TableHeader("Product Model")
+                            @head.TableHeader("Product Type")
+                            @head.TableHeader("Operating System")
+                            @head.TableHeader("CPU Architecture")
+                            @head.TableHeader("Edition")
+                            @head.TableHeader("Platform ID")
+                            @head.TableHeader("Service Pack")
+                            @head.TableHeader("OS Version")
+                            @head.TableHeader("Network Card Name")
+                            @head.TableHeader("Domain Name")
+                            @head.TableHeader("Gateway")
+                            @head.TableHeader("Subnet Mask")
                         }
                         foreach (StreamScan.Models.Machine machine in Model.Machines)
                         {
                             StreamScanCommon.Infos.Info properties = machine.Properties;
-                            @table.TableDataRow("", machine.Id, properties.InfosReseau.HostName, properties.InfosReseau.IpAddress,
-                           properties.InfosStreamX.Version, $"{properties.InfosMachine.ManufacturerName} {properties.InfosMachine.ProductName}")
+                            var drive0 = (properties.InfosMachine.CustomDrives != null)?properties.InfosMachine.CustomDrives[0]:null;
+                            @table.TableDataRow(
+                            "",
+                            machine.Id,
+                            properties.InfosReseau.HostName,
+                            properties.InfosReseau.IpAddress,
+                            properties.InfosStreamX.Version,
+                            (drive0 != null) ? $"{drive0.Name}({drive0.TotalSize - drive0.TotalFreeSpace}GB/{drive0.TotalSize}GB)" : "",
+                            properties.InfosStreamX.Filename,
+                            properties.InfosStreamX.FirstInstallation,
+                            properties.InfosStreamX.LastInstallation,
+                            "<Components>",
+                            "<Logs>",
+                            properties.InfosMachine.ManufacturerName,
+                            properties.InfosMachine.ProductName,
+                            properties.InfosMachine.ProductType,
+                            properties.InfosMachine.ProductNameOs,
+                            properties.InfosMachine.CpuArchitecture,
+                            properties.InfosMachine.Edition,
+                            properties.InfosMachine.PlatformID,
+                            properties.InfosMachine.ServicePack,
+                            properties.InfosMachine.Version,
+                            properties.InfosReseau.CardName,
+                            properties.InfosReseau.DomainName,
+                            properties.InfosReseau.Gateway,
+                            properties.InfosReseau.SubnetMask
+                            )
                         }
                     }
                     <div style="height:30px;margin-top: 10px;">
                         @using (var form = Html.Bootstrap().Form("UpdateMachine", FormMethod.Post).SetId("updateForm").Begin())
                         {
-                            @form.ValidationSummary().AddStyle("float","left")
+                            @form.ValidationSummary().AddStyle("float", "left")
                             @form.Hidden("machineId").SetId("machineId")
                             @Html.Bootstrap().Button("Update...").AddStyle("float", "right")
                         }
@@ -230,9 +275,10 @@ else
         $(document).ready(function () {
             var datatable = $('#machines-table').DataTable({
                 "bInfo": false,
-                "scrollY": 200,
+                "scrollY": 300,
                 "scrollX": true,
                 "paging": false,
+                fixedColumns: true,
                 columnDefs: [{
                     orderable: false,
                     className: 'select-checkbox',
@@ -244,6 +290,7 @@ else
                 },
                 order: [[1, 'desc']]
             });
+            datatable.columns.adjust().draw();
             $('#modal_infos').on('shown.bs.modal', function () {
                 $("#FirstDataCol").click();
                 $(".mCustomScrollbar").mCustomScrollbar();
@@ -255,7 +302,7 @@ else
                 } else {
                     $("#updateForm .text-danger").text("Please select a machine to update")
                 }
-                    
+
             });
         });
     </script>

@@ -10,13 +10,15 @@ namespace StreamScan.Models
         string Login(Login login);
         //Enterprises
         List<Enterprise> GetEnterprises();
+        Enterprise GetEnterprise(int enterprise);
         MySqlReturn InsertEnterprise(Enterprise enterprise);
         MySqlReturn UpdateEnterprise(Enterprise enterprise);
         MySqlReturn DeleteEnterprise(int id);
         //Facilities
         List<Facility> GetFacilities(int enterprise);
-        MySqlReturn InsertFacility(Facility facility, int enterprise);
-        MySqlReturn UpdateFacility(Facility facility, int enterprise);
+        Facility GetFacility(int facility);
+        MySqlReturn InsertFacility(Facility facility);
+        MySqlReturn UpdateFacility(Facility facility);
         MySqlReturn DeleteFacility(int id);
         //Machines
         Dictionary<int, List<Machine>> GetEnterpriseMachines(int enterprise);

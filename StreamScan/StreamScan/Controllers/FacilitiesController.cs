@@ -1,4 +1,6 @@
+using QueriesManager.Bean;
 using StreamScan.Models;
+using StreamScan.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +9,10 @@ using System.Web.Mvc;
 
 namespace StreamScan.Controllers
 {
+
+    /// <summary>
+    /// Controller de la page "Facilities"
+    /// </summary>
     [Authorize]
     public class FacilitiesController : Controller
     {
@@ -17,41 +23,124 @@ namespace StreamScan.Controllers
         {
             dal = new Dal();
         }
-        
-        public ActionResult Delete(int id)
-        {
 
-            return View();
+        /// <summary>
+        /// Liste les ouvrages de l'entreptise spécifiée
+        /// </summary>
+        /// <param name="enterprise">L'ID de l'entreprise</param>
+        public ActionResult Index(int enterprise)
+        {
+            List<Facility> facilities = dal.GetFacilities(enterprise);
+            Enterprise enterpriseObj = dal.GetEnterprise(enterprise);
+
+            return View(new FacilitiesViewModel { Enterprise = enterpriseObj, Facilities = facilities });
         }
 
-        public ActionResult Index()
+        /// <summary>
+        /// Affiche la page d'ajout d'un ouvrage
+        /// </summary>
+        /// <param name="enterprise">L'ID de l'entreprise à laquelle on ajoute l'ouvrage</param>
+        public ActionResult New(int enterprise)
         {
-
-            return View();
+            return View(new NewFacilityViewModel { Enterprise = enterprise});
         }
 
-        public ActionResult New()
+        /// <summary>
+        /// Ajoute l'ouvrage spécifié
+        /// </summary>
+        /// <param name="facility">L'ouvrage à ajouter</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult New(NewFacilityViewModel model)
         {
-
-            return View();
+            model.Facility.Fk_Enterprise = model.Enterprise;
+            if (ModelState.IsValid)
+            {
+                MySqlReturn sqlR = dal.InsertFacility(model.Facility);
+                if (sqlR.ErrorMessage != "")
+                {
+                    TempData["Exception_Message"] = sqlR.ErrorMessage;
+                    return Redirect("/Error");
+                }
+                if (sqlR.IsOk)
+                {
+                    TempData["Message"] = "The facility has been added successfully";
+                    return Redirect("/Facilities/Index/" + model.Enterprise);
+                }
+                else
+                {
+                    TempData["Error"] = "An error occured during the adding";
+                }
+            }
+            return View(model);
         }
-        
-        public ActionResult New(Facility facility)
-        {
 
-            return View();
+        /// <summary>
+        /// Affiche la page de mise à jour
+        /// </summary>
+        /// <param name="facility">L'ID de l'ouvrage à mettre à jour</param>
+        public ActionResult Update(int facility)
+        {
+            Facility model = dal.GetFacility(facility);
+            return View(model);
         }
-        
-        public ActionResult Update(int id)
-        {
 
-            return View();
+        /// <summary>
+        /// Met à jour l'ouvrage spécifié
+        /// </summary>
+        /// <param name="model">Les infos de l'ouvrage à mettre à jour</param>
+        /// <param name="enterprise">L'ID de l'entreprise</param>
+        /// <param name="facility">L'ID de l'ouvrage</param>
+        [HttpPost]
+        public ActionResult Update(Facility model, int enterprise, int facility)
+        {
+            if (ModelState.IsValid)
+            {
+                model.Id = facility;
+                model.Fk_Enterprise = enterprise;
+                MySqlReturn sqlR = dal.UpdateFacility(model);
+                if (sqlR.ErrorMessage != "")
+                {
+                    TempData["Exception_Message"] = sqlR.ErrorMessage;
+                    return Redirect("/Error");
+                }
+                if (sqlR.IsOk)
+                {
+                    TempData["Message"] = "The facility has been updated successfully";
+                    return Redirect("/Facilities/Index/" + enterprise);
+                }
+                else
+                {
+                    TempData["Error"] = "An error occured during the update";
+                }
+            }
+            return View(model);
         }
-        
-        public ActionResult Update(Enterprise enterprise)
-        {
 
-            return View();
+        /// <summary>
+        /// Supprime l'ouvrage possédant l'ID spécifié
+        /// </summary>
+        /// <param name="enterprise">L'ID de l'entreprise utilisé pour la redirection</param>
+        /// <param name="facility">L'ID de l'ouvrage à supprimer</param>
+        [HttpPost]
+        public ActionResult Delete(int enterprise, int facility)
+        {
+            MySqlReturn sqlR = dal.DeleteFacility(facility);
+            if (sqlR.ErrorMessage != "")
+            {
+                TempData["Exception_Message"] = sqlR.ErrorMessage;
+                return Redirect("/Error");
+            }
+            if (sqlR.IsOk)
+            {
+                TempData["Message"] = "The facility has been deleted successfully";
+                return Redirect("/Facilities/Index/" + enterprise);
+            }
+            else
+            {
+                TempData["Error"] = "An error occured during the deletion";
+                return Redirect("/Facilities/Index/" + enterprise);
+            }
         }
 
     }

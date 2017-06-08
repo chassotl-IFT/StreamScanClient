@@ -4,6 +4,7 @@
     ViewBag.Title = "Login";
 }
 <script>
+    //Sélectionne le bon menu dans la barre de navigation
     document.querySelectorAll(".nv-login").forEach(function (el) { el.className += " active"; })
 </script>
 @if (User.Identity.IsAuthenticated)

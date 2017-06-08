@@ -1,9 +1,13 @@
-﻿@model Dictionary<string, string>
+﻿@model StreamScan.ViewModels.ScanViewModel
 @{
     ViewBag.Title = "Scan";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="row col-md-4">
+<script>
+    //Sélectionne le bon menu dans la barre de navigation
+    document.querySelectorAll(".nv-scan").forEach(function (el) { el.className += " active"; })
+</script>
+<div class="row col-md-6">
 @using (Ajax.BeginForm("GetFacilities", null, new AjaxOptions
 {
     HttpMethod = "GET",
@@ -13,14 +17,17 @@
     OnSuccess = "EntSuccess"
 }, new { @id = "enterprisesForm"}))
 {
-    @Html.Bootstrap().Select("enterprise", "Enterprise", Model).SetId("enterprisesSelect")
-    @Html.Bootstrap().ValidationSummary();
-    @Html.ValidationMessage("enterprise");
+    @Html.Bootstrap().SelectFor(m => m.enterprise, Model.CmxEnterprises)
+    @Html.Bootstrap().ValidationSummary()
 }
 
 <div id="connection"></div>
 </div>
 <script type="text/javascript">
+    /**
+     * Affiche le message de l'exception générée
+     * @@param data La réponse de la requête
+     */
     function EntError(data) {
         var html = data.responseText;
         var div = document.createElement('div');
@@ -29,11 +36,14 @@
         document.querySelector("#enterprisesForm .text-danger").textContent = div.nextSibling.textContent;
         document.querySelector("#connection").textContent = "";
     }
+    /**
+     * Supprime le message d'erreur
+     */
     function EntSuccess() {
         document.querySelector("#enterprisesForm .text-danger").textContent = "";
     }
-
-    $('#enterprisesSelect').on('change', function () {
+    // Submit si la combobox des entreprises change
+    $('#enterprise').on('change', function () {
         $("#enterprisesForm").submit();
     })
 </script>
