@@ -57,11 +57,18 @@ namespace StreamScan.Models
         /// <returns>La liste des machines de l'ouvrage</returns>
         public List<Machine> GetFacilityMachines(int facility)
         {
+            //On démarre la transaction
+            Transaction transaction = db.BeginTransaction();
+            
+            //On récupère les propriétés de la machine
             Dictionary<string, Object> parameters = new Dictionary<string, Object>();
             parameters.Add("@facility", facility);
-            MySqlReturn sqlR = db.ExecuteQuery(CMachines.GET_FACILITY_MACHINES, parameters);
+            MySqlReturn sqlR = transaction.ExecuteQuery(CMachines.GET_FACILITY_MACHINES, parameters);
             if (sqlR.ErrorMessage != "")
+            {
+                transaction.Rollback();
                 throw new Exception(sqlR.ErrorMessage);
+            }
             if (!sqlR.IsOk)
                 return new List<Machine>();
 
@@ -96,11 +103,70 @@ namespace StreamScan.Models
                 machine = HMachines.SetMachineProperty(machine, sys_property, line[2]);
                 machines[pk_system] = machine;
             }
+            Dictionary<int, int> versions = new Dictionary<int, int>();
+            foreach (int key in machines.Keys)
+            {
+                //On récupère la version de la machine
+                parameters = new Dictionary<string, Object>();
+                parameters.Add("@systemId", key);
+                sqlR = transaction.ExecuteQuery(CMachines.GET_MACHINE_VERSION, parameters);
+
+                int version;
+                if (!Int32.TryParse(sqlR.Data[0][0], out version))
+                    throw new Exception($"A database property type is not correct. " +
+                        $"Attempted type : INT32 but got {sqlR.Data[0][0].GetType()}(Value:{sqlR.Data[0][0]}). " +
+                        $"Please contact the administrator.");
+                versions[key] = version;
+
+                //On récupère les composants de la machine
+                parameters = new Dictionary<string, Object>();
+                parameters.Add("@systemId", key);
+                sqlR = transaction.ExecuteQuery(CMachines.GET_COMPONENTS, parameters);
+                if (sqlR.ErrorMessage != "")
+                {
+                    transaction.Rollback();
+                    throw new Exception(sqlR.ErrorMessage);
+                }
+                List<StreamXComponent> components = new List<StreamXComponent>();
+                foreach (List<string> line in sqlR.Data)
+                {
+                    StreamXComponent component = new StreamXComponent();
+                    component.Version = line[0];
+                    component.Name = line[1];
+                    component.Log = (line[2] == "0") ? false : true;
+                    components.Add(component);
+                }
+                machines[key].InfosStreamX.StreamXComponents = components;
+
+                //On récupère les disques durs de la machine
+                parameters = new Dictionary<string, Object>();
+                parameters.Add("@systemId", key);
+                sqlR = transaction.ExecuteQuery(CMachines.GET_HARDDRIVES, parameters);
+                if (sqlR.ErrorMessage != "")
+                {
+                    transaction.Rollback();
+                    throw new Exception(sqlR.ErrorMessage);
+                }
+                List<CustomDrive> drives = new List<CustomDrive>();
+                foreach (List<string> line in sqlR.Data)
+                {
+                    CustomDrive drive = new CustomDrive();
+                    drive.Name = line[0];
+                    drive.VolumeLabel = line[1];
+                    drive.TotalSize = Double.Parse(line[2]);
+                    drive.UsedSpace = Double.Parse(line[3]);
+                    drives.Add(drive);
+                }
+                machines[key].InfosStreamX.StreamXComponents = components;
+                machines[key].InfosMachine.CustomDrives = drives;
+            }
+
+
             //On construit une liste de Machine à partir du Dictionary
             List<Machine> machinesList = new List<Machine>();
             foreach (int key in machines.Keys)
             {
-                machinesList.Add(new Machine { Id = key, Properties = machines[key] });
+                machinesList.Add(new Machine { Id = key, Properties = machines[key], Version = versions[key] });
             }
             return machinesList;
         }
@@ -116,7 +182,7 @@ namespace StreamScan.Models
             //On démarre la transaction
             Transaction transaction = db.BeginTransaction();
 
-                #region  [obsolete] Table lock of "T_System"
+            #region  [obsolete] Table lock of "T_System"
             //On verrouille en écriture la table "T_System" afin de pouvoir 
             //récupérer plus tard la PK de l'entrée insérée
             //db.ExecuteQuery(CMachines.LOCK_SYSTEM);
@@ -177,12 +243,31 @@ namespace StreamScan.Models
                 parameters.Add("@name", component.Name);
                 parameters.Add("@log", 0);
                 parameters.Add("@systemId", systemId);
-                sqlR = transaction.ExecuteQuery(CMachines.INSERT_COMPONENTS, parameters);
+                sqlR = transaction.ExecuteQuery(CMachines.INSERT_COMPONENT, parameters);
                 if (!sqlR.IsOk)
                 {
                     transaction.Rollback();
                     if (sqlR.ErrorMessage == "")
                         sqlR.ErrorMessage = "An error occured during adding the components";
+                    return sqlR;
+                }
+            }
+
+            //On insert les disques durs
+            foreach (CustomDrive drive in machine.InfosMachine.CustomDrives)
+            {
+                parameters = new Dictionary<string, Object>();
+                parameters.Add("@name", drive.Name);
+                parameters.Add("@label", drive.VolumeLabel);
+                parameters.Add("@capacity", drive.TotalSize);
+                parameters.Add("@usedSpace", drive.TotalSize - drive.TotalFreeSpace);
+                parameters.Add("@systemId", systemId);
+                sqlR = transaction.ExecuteQuery(CMachines.INSERT_HARDDRIVE, parameters);
+                if (!sqlR.IsOk)
+                {
+                    transaction.Rollback();
+                    if (sqlR.ErrorMessage == "")
+                        sqlR.ErrorMessage = "An error occured during adding the hard drives";
                     return sqlR;
                 }
             }
@@ -198,25 +283,14 @@ namespace StreamScan.Models
         /// <param name="systemId">l'ID de la machine à mettre à jour</param>
         /// <param name="machine">Les infos de la machine</param>
         /// <returns>Le retour SQL (booléen d'état + [si erreur]message d'erreur)</returns>
-        public MySqlReturn UpdateMachine(int systemId, Info machine)
+        public MySqlReturn UpdateMachine(int version, int systemId, Info machine)
         {
+
             //On démarre la transaction
             Transaction transaction = db.BeginTransaction();
 
-            //On récupère la version de la machine
-            Dictionary<string, Object> parameters = new Dictionary<string, Object>();
-            parameters.Add("@systemId", systemId);
-            MySqlReturn sqlR = transaction.ExecuteQuery(CMachines.GET_MACHINE_VERSION, parameters);
-
-            int version;
-            if (!Int32.TryParse(sqlR.Data[0][0], out version))
-                return new MySqlReturn
-                {
-                    ErrorMessage = $"A database property type is not correct. " +
-                        $"Attempted type : INT32 but got {sqlR.Data[0][0].GetType()}(Value:{sqlR.Data[0][0]}). " +
-                        $"Please contact the administrator."
-                };
-
+            Dictionary<string, Object> parameters = new Dictionary<string, object>();
+            MySqlReturn sqlR = null;
             Dictionary<int, Object> properties = HMachines.GetMachineProperties(machine);
             foreach (int key in properties.Keys)
             {
@@ -239,7 +313,7 @@ namespace StreamScan.Models
             parameters = new Dictionary<string, Object>();
             parameters.Add("@systemId", systemId);
             sqlR = transaction.ExecuteQuery(CMachines.DELETE_COMPONENTS, parameters);
-            if (sqlR.ErrorMessage == "")
+            if (sqlR.ErrorMessage != "")
                 return sqlR;
 
             //On insert les composents StreamX
@@ -248,14 +322,40 @@ namespace StreamScan.Models
                 parameters = new Dictionary<string, Object>();
                 parameters.Add("@version", component.Version);
                 parameters.Add("@name", component.Name);
-                parameters.Add("@log", "");
+                parameters.Add("@log", (component.Log)?1:0);
                 parameters.Add("@systemId", systemId);
-                sqlR = transaction.ExecuteQuery(CMachines.INSERT_COMPONENTS);
+                sqlR = transaction.ExecuteQuery(CMachines.INSERT_COMPONENT, parameters);
                 if (!sqlR.IsOk)
                 {
                     transaction.Rollback();
                     if (sqlR.ErrorMessage == "")
                         sqlR.ErrorMessage = "An error occured during adding the components";
+                    return sqlR;
+                }
+            }
+
+            //On supprime les disques durs
+            parameters = new Dictionary<string, Object>();
+            parameters.Add("@systemId", systemId);
+            sqlR = transaction.ExecuteQuery(CMachines.DELETE_HARDDRIVES, parameters);
+            if (sqlR.ErrorMessage != "")
+                return sqlR;
+
+            //On insert les disques durs
+            foreach (CustomDrive drive in machine.InfosMachine.CustomDrives)
+            {
+                parameters = new Dictionary<string, Object>();
+                parameters.Add("@name", drive.Name);
+                parameters.Add("@label", drive.VolumeLabel);
+                parameters.Add("@capacity", drive.TotalSize);
+                parameters.Add("@usedSpace", drive.UsedSpace);
+                parameters.Add("@systemId", systemId);
+                sqlR = transaction.ExecuteQuery(CMachines.INSERT_HARDDRIVE, parameters);
+                if (!sqlR.IsOk)
+                {
+                    transaction.Rollback();
+                    if (sqlR.ErrorMessage == "")
+                        sqlR.ErrorMessage = "An error occured during adding the hard drives";
                     return sqlR;
                 }
             }
@@ -269,7 +369,7 @@ namespace StreamScan.Models
             {
                 transaction.Rollback();
                 if (sqlR.ErrorMessage == "")
-                    sqlR.ErrorMessage = "An error occured during adding the components";
+                    sqlR.ErrorMessage = "The machine you tried to update has been updated by another user since you loaded the page. Please repeat the operation.";
                 return sqlR;
             }
 

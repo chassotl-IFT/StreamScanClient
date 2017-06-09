@@ -114,9 +114,9 @@ namespace StreamScan.Models
             return dalMachines.InsertMachine(facility, machine);
         }
 
-        public MySqlReturn UpdateMachine(int id, Info machine)
+        public MySqlReturn UpdateMachine(int version, int systemId, Info machine)
         {
-            return dalMachines.UpdateMachine(id, machine);
+            return dalMachines.UpdateMachine(version, systemId, machine);
         }
     }
 

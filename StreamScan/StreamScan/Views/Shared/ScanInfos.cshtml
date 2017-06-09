@@ -18,7 +18,7 @@ else
     <script>$("#modal_infos").modal()</script>
 
     <div class="modal fade" id="modal_infos" tabindex="-1" role="dialog" aria-labelledby="modal_infos-label">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-lg" style="width:1200px" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -200,6 +200,7 @@ else
                         {
                             @head.TableHeader("")
                             @head.TableHeader("#")
+                            @head.TableHeader("Update Version")
                             @head.TableHeader("Hostname").SetId("FirstDataCol")
                             @head.TableHeader("IP Address")
                             @head.TableHeader("StreamX Version")
@@ -208,7 +209,6 @@ else
                             @head.TableHeader("StreamX First Installation Date")
                             @head.TableHeader("StreamX Last Installation Date")
                             @head.TableHeader("StreamX Components")
-                            @head.TableHeader("StreamX Logs Folders")
                             @head.TableHeader("Manufacturer Name")
                             @head.TableHeader("Product Model")
                             @head.TableHeader("Product Type")
@@ -226,19 +226,20 @@ else
                         foreach (StreamScan.Models.Machine machine in Model.Machines)
                         {
                             StreamScanCommon.Infos.Info properties = machine.Properties;
-                            var drive0 = (properties.InfosMachine.CustomDrives != null)?properties.InfosMachine.CustomDrives[0]:null;
+                            var drive0 = (machine.Properties.InfosMachine.CustomDrives != null && machine.Properties.InfosMachine.CustomDrives.Count != 0)
+                                ? machine.Properties.InfosMachine.CustomDrives[0] : null;
                             @table.TableDataRow(
                             "",
                             machine.Id,
+                            machine.Version,
                             properties.InfosReseau.HostName,
                             properties.InfosReseau.IpAddress,
                             properties.InfosStreamX.Version,
-                            (drive0 != null) ? $"{drive0.Name}({drive0.TotalSize - drive0.TotalFreeSpace}GB/{drive0.TotalSize}GB)" : "",
+                            (drive0 != null) ? $"{drive0.Name}({drive0.UsedSpace}GB/{drive0.TotalSize}GB)" : "",
                             properties.InfosStreamX.Filename,
                             properties.InfosStreamX.FirstInstallation,
                             properties.InfosStreamX.LastInstallation,
-                            "<Components>",
-                            "<Logs>",
+                            Html.Bootstrap().Button("Show Components").AddAttributes(new { @data_toggle = "modal", @data_target = $"#components-modal-{machine.Id}" }),
                             properties.InfosMachine.ManufacturerName,
                             properties.InfosMachine.ProductName,
                             properties.InfosMachine.ProductType,
@@ -255,11 +256,13 @@ else
                             )
                         }
                     }
+
                     <div style="height:30px;margin-top: 10px;">
                         @using (var form = Html.Bootstrap().Form("UpdateMachine", FormMethod.Post).SetId("updateForm").Begin())
                         {
                             @form.ValidationSummary().AddStyle("float", "left")
-                            @form.Hidden("machineId").SetId("machineId")
+                            @form.Hidden("systemId").SetId("machineId")
+                            @form.Hidden("version").SetId("machineVersion")
                             @Html.Bootstrap().Button("Update...").AddStyle("float", "right")
                         }
                         @using (var form = Html.Bootstrap().Form("InsertMachine", FormMethod.Post).HideValidationSummary().Begin())
@@ -271,6 +274,29 @@ else
             </div>
         </div>
     </div>
+
+    foreach (StreamScan.Models.Machine machine in Model.Machines)
+    {
+        <div class="modal fade" id="components-modal-@machine.Id" tabindex="-1" role="dialog" aria-labelledby="components-modal-@machine.Id-label">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content black-modal">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModal-label">Components</h4>
+                    </div>
+                    <div class="modal-body">
+                        @using (var tab2 = @Html.Bootstrap().Table().Begin())
+                        {
+                            @tab2.TableHeaderRow("Name", "Version", "Log (Yes/No)")
+                            foreach (StreamScanCommon.Infos.StreamXComponent component in machine.Properties.InfosStreamX.StreamXComponents)
+                            {
+                                @tab2.TableDataRow(component.Name, component.Version, (component.Log) ? "Yes" : "No")
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
     <script>
         $(document).ready(function () {
             var datatable = $('#machines-table').DataTable({
@@ -298,6 +324,7 @@ else
             $('#updateForm button').on('click', function () {
                 if ($('tr.selected td:nth-child(2)').text()) {
                     $("#machineId").attr("value", $('tr.selected td:nth-child(2)').text());
+                    $("#machineVersion").attr("value", $('tr.selected td:nth-child(3)').text());
                     $('#updateForm').submit();
                 } else {
                     $("#updateForm .text-danger").text("Please select a machine to update")

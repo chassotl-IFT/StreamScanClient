@@ -97,7 +97,7 @@ namespace StreamScan.Controllers
                 }
                 else
                 {
-                    TempData["Error"] = "An error occured during the update";
+                    TempData["Error"] = "An error occured during the update. If this error still coming please go back to the enterprises list and re-update this enterprise.";
                 }
             }
             return View(model);

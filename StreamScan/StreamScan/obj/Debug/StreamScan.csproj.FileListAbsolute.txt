@@ -87,3 +87,4 @@ C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\obj\Debug\Str
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\obj\Debug\StreamScan.pdb
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\QueriesManager.pdb
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\QueriesManager.dll.config
+C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\StreamScanCommon.pdb

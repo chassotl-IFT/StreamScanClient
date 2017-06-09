@@ -67,7 +67,8 @@ namespace StreamScan.Models
                 Address = sqlR.Data[0][2],
                 Npa = Int32.Parse(sqlR.Data[0][3]),
                 City = sqlR.Data[0][4],
-                Fk_Enterprise = Int32.Parse(sqlR.Data[0][5])
+                Version = Int32.Parse(sqlR.Data[0][5]),
+                Fk_Enterprise = Int32.Parse(sqlR.Data[0][6])
             };
             return facilityObj;
         }
@@ -102,6 +103,7 @@ namespace StreamScan.Models
             parameters.Add("@address", facility.Address);
             parameters.Add("@npa", facility.Npa);
             parameters.Add("@city", facility.City);
+            parameters.Add("@version", facility.Version);
             MySqlReturn sqlR = db.ExecuteQuery(CFacilities.UPDATE_FACILITY, parameters);
             return sqlR;
         }

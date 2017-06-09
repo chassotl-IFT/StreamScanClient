@@ -7,6 +7,8 @@ namespace StreamScan.Models
     {
         public int Id { get; set; }
 
+        public int Version { get; set; }
+
         [Required]
         public string Name { get; set; }
 

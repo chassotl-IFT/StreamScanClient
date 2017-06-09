@@ -12,12 +12,11 @@
             @head.TableHeader("Hostname")
             @head.TableHeader("IP Address")
             @head.TableHeader("StreamX Version")
-            @head.TableHeader("Hard Drive")
+            @head.TableHeader("Hard Drives")
             @head.TableHeader("StreamX FileName")
             @head.TableHeader("StreamX First Installation Date")
             @head.TableHeader("StreamX Last Installation Date")
             @head.TableHeader("StreamX Components")
-            @head.TableHeader("StreamX Logs Folders")
             @head.TableHeader("Manufacturer Name")
             @head.TableHeader("Product Model")
             @head.TableHeader("Product Type")
@@ -41,12 +40,11 @@
             @head.TableHeader("Hostname")
             @head.TableHeader("IP Address")
             @head.TableHeader("StreamX Version")
-            @head.TableHeader("Hard Drive")
+            @head.TableHeader("Hard Drives")
             @head.TableHeader("StreamX FileName")
             @head.TableHeader("StreamX First Installation Date")
             @head.TableHeader("StreamX Last Installation Date")
             @head.TableHeader("StreamX Components")
-            @head.TableHeader("StreamX Logs Folders")
             @head.TableHeader("Manufacturer Name")
             @head.TableHeader("Product Model")
             @head.TableHeader("Product Type")
@@ -66,7 +64,8 @@
             List<StreamScan.Models.Machine> machines = Model.Machines[key];
             foreach (StreamScan.Models.Machine machine in machines)
             {
-                var drive0 = (machine.Properties.InfosMachine.CustomDrives != null) ? machine.Properties.InfosMachine.CustomDrives[0] : null;
+                var drive0 = (machine.Properties.InfosMachine.CustomDrives != null && machine.Properties.InfosMachine.CustomDrives.Count != 0)
+                    ? machine.Properties.InfosMachine.CustomDrives[0] : null;
                 using (var row = table.TableDataRow().Begin())
                 {
                     if (Model.facility == 0)
@@ -76,12 +75,11 @@
                     @row.TableData(machine.Properties.InfosReseau.HostName)
                     @row.TableData(machine.Properties.InfosReseau.IpAddress)
                     @row.TableData(machine.Properties.InfosStreamX.Version)
-                    @row.TableData((drive0 != null) ? $"{drive0.Name}({drive0.TotalSize - drive0.TotalFreeSpace}GB/{drive0.TotalSize}GB)" : "")
+                    @row.TableData((drive0 != null) ? $"{drive0.Name}({drive0.UsedSpace}GB/{drive0.TotalSize}GB)" : "")
                     @row.TableData(machine.Properties.InfosStreamX.Filename)
                     @row.TableData(machine.Properties.InfosStreamX.FirstInstallation)
                     @row.TableData(machine.Properties.InfosStreamX.LastInstallation)
-                    @row.TableData("")
-                    @row.TableData("")
+                    @row.TableData(Html.Bootstrap().Button("Show Components").AddAttributes(new { @data_toggle="modal", @data_target= $"#components-modal-{machine.Id}" }))
                     @row.TableData(machine.Properties.InfosMachine.ManufacturerName)
                     @row.TableData(machine.Properties.InfosMachine.ProductName)
                     @row.TableData(machine.Properties.InfosMachine.ProductType)
@@ -97,6 +95,36 @@
                     @row.TableData(machine.Properties.InfosReseau.SubnetMask)
                 }
             }
+        }
+    }
+    foreach (int key in Model.Machines.Keys)
+    {
+        List<StreamScan.Models.Machine> machines = Model.Machines[key];
+        foreach (StreamScan.Models.Machine machine in machines)
+        {
+            <div class="modal fade" id="components-modal-@machine.Id" tabindex="-1" role="dialog" aria-labelledby="components-modal-@machine.Id-label">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModal-label">Components</h4>
+                        </div>
+                        <div class="modal-body">
+                            @using (var tab2 = @Html.Bootstrap().Table().Begin())
+                            {
+                                @tab2.TableHeaderRow("Name", "Version", "Log (Yes/No)")
+                                foreach (StreamScanCommon.Infos.StreamXComponent component in machine.Properties.InfosStreamX.StreamXComponents)
+                                {
+                                    @tab2.TableDataRow(component.Name, component.Version, (component.Log) ? "Yes" : "No")
+                                }
+                            }
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
     }
     <script>

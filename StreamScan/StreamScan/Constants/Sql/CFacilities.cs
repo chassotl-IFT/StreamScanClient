@@ -16,7 +16,7 @@ namespace StreamScan.Constants.Sql
         public const string INSERT_FACILITY = "INSERT INTO T_Facility (name, address, npa, city, version, FK_Enterprise) " +
                                               "VALUES (@name, @address, @npa, @city, 1, @enterpriseId)";
 
-        public const string UPDATE_FACILITY = "UPDATE T_Facility SET name=@name, address=@address, npa=@npa, city=@city, version=version+1 " +
+        public const string UPDATE_FACILITY = "UPDATE T_Facility SET name=@name, address=@address, npa=@npa, city=@city, version=@version+1 " +
                                               "WHERE PK_Facility=@facilityId AND version=@version";
 
         public const string DELETE_FACILITY = "DELETE FROM T_Facility WHERE PK_Facility = @facility";

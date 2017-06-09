@@ -31,8 +31,16 @@ namespace StreamScan.Controllers
         public ActionResult Index(int enterprise)
         {
             List<Facility> facilities = dal.GetFacilities(enterprise);
-            Enterprise enterpriseObj = dal.GetEnterprise(enterprise);
-
+            Enterprise enterpriseObj = null;
+            try
+            {
+                enterpriseObj = dal.GetEnterprise(enterprise);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                TempData["Error"] = "The enterprise you request doesn't exist anymore.";
+                return Redirect("/Enterprises/Index");
+            }
             return View(new FacilitiesViewModel { Enterprise = enterpriseObj, Facilities = facilities });
         }
 
@@ -42,7 +50,7 @@ namespace StreamScan.Controllers
         /// <param name="enterprise">L'ID de l'entreprise à laquelle on ajoute l'ouvrage</param>
         public ActionResult New(int enterprise)
         {
-            return View(new NewFacilityViewModel { Enterprise = enterprise});
+            return View(new NewFacilityViewModel { Enterprise = enterprise });
         }
 
         /// <summary>
@@ -59,8 +67,13 @@ namespace StreamScan.Controllers
                 MySqlReturn sqlR = dal.InsertFacility(model.Facility);
                 if (sqlR.ErrorMessage != "")
                 {
-                    TempData["Exception_Message"] = sqlR.ErrorMessage;
-                    return Redirect("/Error");
+                    if (sqlR.ErrorMessage.Contains("Cannot add or update a child row"))
+                        TempData["Error"] = "Can't add the machine : the enterprise or the facility in which the machine should be inserted has been deleted.";
+                    else
+                    {
+                        TempData["Exception_Message"] = sqlR.ErrorMessage;
+                        return Redirect("/Error");
+                    }
                 }
                 if (sqlR.IsOk)
                 {
@@ -69,7 +82,7 @@ namespace StreamScan.Controllers
                 }
                 else
                 {
-                    TempData["Error"] = "An error occured during the adding";
+                    TempData["Error"] = "An error occured during the adding. If this error still coming please check that the enterprise in which you are trying to insert the facility still exists.";
                 }
             }
             return View(model);
@@ -111,7 +124,7 @@ namespace StreamScan.Controllers
                 }
                 else
                 {
-                    TempData["Error"] = "An error occured during the update";
+                    TempData["Error"] = "An error occured during the update. If this error still coming please go back to the facilities list and re-update this facility.";
                 }
             }
             return View(model);

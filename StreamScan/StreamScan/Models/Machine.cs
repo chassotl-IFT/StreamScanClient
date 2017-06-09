@@ -11,5 +11,7 @@ namespace StreamScan.Models
         public int Id { get; set; }
 
         public Info Properties { get; set; }
+
+        public int Version { get; set; }
     }
 }

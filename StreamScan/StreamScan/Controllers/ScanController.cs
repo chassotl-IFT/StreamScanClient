@@ -122,7 +122,12 @@ namespace StreamScan.Controllers
             int facility = (int)Session["facilityId"];
             MySqlReturn sqlR = dal.InsertMachine(facility, infos);
             if (!sqlR.IsOk)
-                TempData["Error"] = sqlR.ErrorMessage;
+            {
+                if (sqlR.ErrorMessage.Contains("Cannot add or update a child row"))
+                    TempData["Error"] = "Can't add the machine : the enterprise or the facility in which the machine should be inserted has been deleted.";
+                else
+                    TempData["Error"] = sqlR.ErrorMessage;
+            }
             else
                 TempData["Message"] = "The machine has been inserted !";
             return Redirect("/");
@@ -133,7 +138,7 @@ namespace StreamScan.Controllers
         /// </summary>
         /// <param name="machineId">L'ID de la machine</param>
         [HttpPost]
-        public ActionResult UpdateMachine(int? machineId)
+        public ActionResult UpdateMachine(int? version, int? systemId)
         {
             Info infos = (Info)Session["infos"];
             if (infos == null)
@@ -142,9 +147,9 @@ namespace StreamScan.Controllers
                 return Redirect("/Error");
             }
             MySqlReturn sqlR;
-            if (machineId != null)
+            if (systemId != null)
             {
-                sqlR = dal.UpdateMachine(machineId.GetValueOrDefault(), infos);
+                sqlR = dal.UpdateMachine(version.GetValueOrDefault(), systemId.GetValueOrDefault(), infos);
             }
             else
             {
@@ -152,7 +157,12 @@ namespace StreamScan.Controllers
             }
 
             if (!sqlR.IsOk)
-                TempData["Error"] = sqlR.ErrorMessage;
+            {
+                if (sqlR.ErrorMessage.Contains("Cannot add or update a child row"))
+                    TempData["Error"] = "Can't add the machine : the enterprise or the facility in which the machine should be inserted has been deleted.";
+                else
+                    TempData["Error"] = sqlR.ErrorMessage;
+            }
             else
                 TempData["Message"] = "The machine has been updated !";
             return Redirect("/");

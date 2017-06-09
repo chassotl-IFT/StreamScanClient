@@ -15,5 +15,7 @@
     @form.EditorFor(m => m.Facility.City, true, true).AddLabelCss("required")
     
 
-    @form.Submit("Add");
+    @form.Submit("Add").EnsureFormGroup(false);
+
+    @Html.Bootstrap().LinkButton("Cancel", "/Facilities/Index/" + Model.Enterprise).RemoveCss("btn-default")
 }

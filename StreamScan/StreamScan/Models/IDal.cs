@@ -24,6 +24,6 @@ namespace StreamScan.Models
         Dictionary<int, List<Machine>> GetEnterpriseMachines(int enterprise);
         List<Machine> GetFacilityMachines(int facility);
         MySqlReturn InsertMachine(int facility, Info machine);
-        MySqlReturn UpdateMachine(int id, Info machine);
+        MySqlReturn UpdateMachine(int version, int systemId, Info machine);
     }
 }

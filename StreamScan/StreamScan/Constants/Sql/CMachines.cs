@@ -31,12 +31,18 @@ namespace StreamScan.Constants.Sql
         public const string UPDATE_MACHINE = "UPDATE T_System_Property SET value=@value " +
                                              "WHERE FK_System=@systemId AND FK_Property_Label=@propertyId";
 
-        public const string GET_COMPONENTS = "SELECT PK_Component FROM T_Component WHERE FK_System=@systemId";
+        public const string GET_COMPONENTS = "SELECT version, name, log FROM T_Component WHERE FK_System=@systemId";
 
         public const string DELETE_COMPONENTS = "DELETE FROM T_Component WHERE FK_System=@systemId";
 
-        public const string INSERT_COMPONENTS = "INSERT INTO T_Component (version, name, log, FK_System) VALUES(@version, @name, @log, @systemId)";
+        public const string INSERT_COMPONENT = "INSERT INTO T_Component (version, name, log, FK_System) VALUES(@version, @name, @log, @systemId)";
 
-        public const string UPDATE_MACHINE_VERSION = "UPDATE T_System SET version=version+1 WHERE PK_System=@systemId AND version=@version";
+        public const string GET_HARDDRIVES = "SELECT name, label, capacity, usedSpace FROM T_Harddrive WHERE FK_System=@systemId";
+
+        public const string DELETE_HARDDRIVES = "DELETE FROM T_Harddrive WHERE FK_System=@systemId";
+
+        public const string INSERT_HARDDRIVE = "INSERT INTO T_Harddrive (name, label, capacity, usedSpace, FK_System) VALUES(@name, @label, @capacity, @usedSpace, @systemId)";
+
+        public const string UPDATE_MACHINE_VERSION = "UPDATE T_System SET version=@version+1 WHERE PK_System=@systemId AND version=@version";
     }
 }

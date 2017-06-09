@@ -72,7 +72,7 @@
     </Reference>
     <Reference Include="StreamScanCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\StreamScanCommon.dll</HintPath>
+      <HintPath>..\..\..\StreamScan\Serveur\Implémentation\StreamScanServer\Infos\bin\Debug\StreamScanCommon.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.DynamicData" />

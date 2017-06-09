@@ -61,7 +61,8 @@ namespace StreamScan.Models
                 Name = sqlR.Data[0][1],
                 Address = sqlR.Data[0][2],
                 Npa = Int32.Parse(sqlR.Data[0][3]),
-                City = sqlR.Data[0][4]
+                City = sqlR.Data[0][4],
+                Version = Int32.Parse(sqlR.Data[0][5])
             };
             return enterpriseObj;
         }
@@ -95,6 +96,7 @@ namespace StreamScan.Models
             parameters.Add("@address", enterprise.Address);
             parameters.Add("@npa", enterprise.Npa);
             parameters.Add("@city", enterprise.City);
+            parameters.Add("@version", enterprise.Version);
             MySqlReturn sqlR = db.ExecuteQuery(CEnterprises.UPDATE_ENTERPRISE, parameters);
             return sqlR;
         }
