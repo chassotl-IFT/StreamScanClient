@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace StreamScanClient.Controllers
+namespace StreamScan.Controllers
 {
     /// <summary>
     /// Controller des pages d'erreurs

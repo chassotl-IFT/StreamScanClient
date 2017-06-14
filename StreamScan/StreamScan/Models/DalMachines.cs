@@ -57,18 +57,12 @@ namespace StreamScan.Models
         /// <returns>La liste des machines de l'ouvrage</returns>
         public List<Machine> GetFacilityMachines(int facility)
         {
-            //On démarre la transaction
-            Transaction transaction = db.BeginTransaction();
-            
             //On récupère les propriétés de la machine
             Dictionary<string, Object> parameters = new Dictionary<string, Object>();
             parameters.Add("@facility", facility);
-            MySqlReturn sqlR = transaction.ExecuteQuery(CMachines.GET_FACILITY_MACHINES, parameters);
+            MySqlReturn sqlR = db.ExecuteQuery(CMachines.GET_FACILITY_MACHINES, parameters);
             if (sqlR.ErrorMessage != "")
-            {
-                transaction.Rollback();
                 throw new Exception(sqlR.ErrorMessage);
-            }
             if (!sqlR.IsOk)
                 return new List<Machine>();
 
@@ -109,7 +103,7 @@ namespace StreamScan.Models
                 //On récupère la version de la machine
                 parameters = new Dictionary<string, Object>();
                 parameters.Add("@systemId", key);
-                sqlR = transaction.ExecuteQuery(CMachines.GET_MACHINE_VERSION, parameters);
+                sqlR = db.ExecuteQuery(CMachines.GET_MACHINE_VERSION, parameters);
 
                 int version;
                 if (!Int32.TryParse(sqlR.Data[0][0], out version))
@@ -121,19 +115,16 @@ namespace StreamScan.Models
                 //On récupère les composants de la machine
                 parameters = new Dictionary<string, Object>();
                 parameters.Add("@systemId", key);
-                sqlR = transaction.ExecuteQuery(CMachines.GET_COMPONENTS, parameters);
+                sqlR = db.ExecuteQuery(CMachines.GET_COMPONENTS, parameters);
                 if (sqlR.ErrorMessage != "")
-                {
-                    transaction.Rollback();
                     throw new Exception(sqlR.ErrorMessage);
-                }
                 List<StreamXComponent> components = new List<StreamXComponent>();
                 foreach (List<string> line in sqlR.Data)
                 {
                     StreamXComponent component = new StreamXComponent();
                     component.Version = line[0];
                     component.Name = line[1];
-                    component.Log = (line[2] == "0") ? false : true;
+                    component.Log = (line[2] == "False") ? false : true;
                     components.Add(component);
                 }
                 machines[key].InfosStreamX.StreamXComponents = components;
@@ -141,26 +132,32 @@ namespace StreamScan.Models
                 //On récupère les disques durs de la machine
                 parameters = new Dictionary<string, Object>();
                 parameters.Add("@systemId", key);
-                sqlR = transaction.ExecuteQuery(CMachines.GET_HARDDRIVES, parameters);
+                sqlR = db.ExecuteQuery(CMachines.GET_HARDDRIVES, parameters);
                 if (sqlR.ErrorMessage != "")
-                {
-                    transaction.Rollback();
                     throw new Exception(sqlR.ErrorMessage);
-                }
                 List<CustomDrive> drives = new List<CustomDrive>();
                 foreach (List<string> line in sqlR.Data)
                 {
                     CustomDrive drive = new CustomDrive();
                     drive.Name = line[0];
                     drive.VolumeLabel = line[1];
-                    drive.TotalSize = Double.Parse(line[2]);
-                    drive.UsedSpace = Double.Parse(line[3]);
+                    double totalSize;
+                    if (!Double.TryParse(line[2], out totalSize))
+                        throw new Exception($"A database property type is not correct. " +
+                            $"Attempted type : Double but got {line[2].GetType()}(Value:{line[2]}). " +
+                            $"Please contact the administrator.");
+                    drive.TotalSize = totalSize;
+                    double usedSpace;
+                    if (!Double.TryParse(line[2], out usedSpace))
+                        throw new Exception($"A database property type is not correct. " +
+                            $"Attempted type : Double but got {line[3].GetType()}(Value:{line[3]}). " +
+                            $"Please contact the administrator.");
+                    drive.UsedSpace = usedSpace;
                     drives.Add(drive);
                 }
                 machines[key].InfosStreamX.StreamXComponents = components;
                 machines[key].InfosMachine.CustomDrives = drives;
             }
-
 
             //On construit une liste de Machine à partir du Dictionary
             List<Machine> machinesList = new List<Machine>();
@@ -241,7 +238,7 @@ namespace StreamScan.Models
                 parameters = new Dictionary<string, Object>();
                 parameters.Add("@version", component.Version);
                 parameters.Add("@name", component.Name);
-                parameters.Add("@log", 0);
+                parameters.Add("@log", component.Log);
                 parameters.Add("@systemId", systemId);
                 sqlR = transaction.ExecuteQuery(CMachines.INSERT_COMPONENT, parameters);
                 if (!sqlR.IsOk)
@@ -322,7 +319,7 @@ namespace StreamScan.Models
                 parameters = new Dictionary<string, Object>();
                 parameters.Add("@version", component.Version);
                 parameters.Add("@name", component.Name);
-                parameters.Add("@log", (component.Log)?1:0);
+                parameters.Add("@log", component.Log);
                 parameters.Add("@systemId", systemId);
                 sqlR = transaction.ExecuteQuery(CMachines.INSERT_COMPONENT, parameters);
                 if (!sqlR.IsOk)
@@ -374,6 +371,7 @@ namespace StreamScan.Models
             }
 
             transaction.Commit();
+            transaction.EndTransaction();
             return new MySqlReturn { IsOk = true };
         }
     }

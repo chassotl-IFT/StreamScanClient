@@ -6,6 +6,7 @@ using QueriesManager;
 using QueriesManager.Bean;
 using StreamScanCommon.Infos;
 using StreamScan.Constants.Sql;
+using System.Configuration;
 
 namespace StreamScan.Models
 {
@@ -19,7 +20,9 @@ namespace StreamScan.Models
 
         public Dal()
         {
-            db = new SqlManager("localhost", "streamscan", "root", "");
+            string connString = ConfigurationManager.ConnectionStrings["databaseSettings"].ConnectionString;
+
+            db = new SqlManager(connString);
             dalEnterprises = new DalEnterprises(db);
             dalFacilities = new DalFacilities(db);
             dalMachines = new DalMachines(db);

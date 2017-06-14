@@ -39,7 +39,7 @@ namespace StreamScan.Controllers
             catch (ArgumentOutOfRangeException)
             {
                 TempData["Error"] = "The enterprise you request doesn't exist anymore.";
-                return Redirect("/Enterprises/Index");
+                return Redirect(Url.Action("Index", "Enbterprises", null));
             }
             return View(new FacilitiesViewModel { Enterprise = enterpriseObj, Facilities = facilities });
         }
@@ -72,13 +72,13 @@ namespace StreamScan.Controllers
                     else
                     {
                         TempData["Exception_Message"] = sqlR.ErrorMessage;
-                        return Redirect("/Error");
+                        return Redirect(Url.Action("Index", "Error", null));
                     }
                 }
                 if (sqlR.IsOk)
                 {
                     TempData["Message"] = "The facility has been added successfully";
-                    return Redirect("/Facilities/Index/" + model.Enterprise);
+                    return Redirect(Url.Action("Index", "Facilities", new { enterprise = model.Enterprise}));
                 }
                 else
                 {
@@ -115,16 +115,16 @@ namespace StreamScan.Controllers
                 if (sqlR.ErrorMessage != "")
                 {
                     TempData["Exception_Message"] = sqlR.ErrorMessage;
-                    return Redirect("/Error");
+                    return Redirect(Url.Action("Index", "Error", null));
                 }
                 if (sqlR.IsOk)
                 {
                     TempData["Message"] = "The facility has been updated successfully";
-                    return Redirect("/Facilities/Index/" + enterprise);
+                    return Redirect(Url.Action("Index", "Facilities", new { enterprise = enterprise }));
                 }
                 else
                 {
-                    TempData["Error"] = "An error occured during the update. If this error still coming please go back to the facilities list and re-update this facility.";
+                    TempData["Error"] = "An error occured during the update. Maybe this facility has been deleted or someone updated it during your request. Please go back to the facilities list and retry.";
                 }
             }
             return View(model);
@@ -142,17 +142,17 @@ namespace StreamScan.Controllers
             if (sqlR.ErrorMessage != "")
             {
                 TempData["Exception_Message"] = sqlR.ErrorMessage;
-                return Redirect("/Error");
+                return Redirect(Url.Action("Index", "Error", null));
             }
             if (sqlR.IsOk)
             {
                 TempData["Message"] = "The facility has been deleted successfully";
-                return Redirect("/Facilities/Index/" + enterprise);
+                return Redirect(Url.Action("Index", "Facilities", new { enterprise = enterprise }));
             }
             else
             {
                 TempData["Error"] = "An error occured during the deletion";
-                return Redirect("/Facilities/Index/" + enterprise);
+                return Redirect(Url.Action("Index", "Facilities", new { enterprise = enterprise }));
             }
         }
 

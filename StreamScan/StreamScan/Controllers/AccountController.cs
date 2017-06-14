@@ -45,7 +45,7 @@ namespace StreamScan.Controllers
                     //Contrôle s'il faut rediriger vers le "returnUrl"
                     if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                         return Redirect(returnUrl);
-                    return Redirect("/");
+                    return Redirect("~/");
                 }
                 @TempData["Error"] = "Wrong username or password";
             }
@@ -58,7 +58,7 @@ namespace StreamScan.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
-            return Redirect("/");
+            return Redirect("~/");
         }
     }
 }

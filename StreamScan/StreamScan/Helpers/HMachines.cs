@@ -34,10 +34,20 @@ namespace StreamScan.Helpers
                     machine.InfosStreamX.Filename = value;
                     break;
                 case CSystemProperties.STREAMX_FIRSTINSTALLATION:
-                    machine.InfosStreamX.FirstInstallation = DateTime.Parse(value);
+                    DateTime dtFirstInstall;
+                    if (!DateTime.TryParse(value, out dtFirstInstall))
+                        throw new Exception($"A database property type is not correct. " +
+                            $"Attempted type : DateTime but got {value.GetType()}(Value:{value}). " +
+                            $"Please contact the administrator.");
+                    machine.InfosStreamX.FirstInstallation = dtFirstInstall;
                     break;
                 case CSystemProperties.STREAMX_LASTINSTALLATION:
-                    machine.InfosStreamX.LastInstallation = DateTime.Parse(value);
+                    DateTime dtLastInstall;
+                    if (!DateTime.TryParse(value, out dtLastInstall))
+                        throw new Exception($"A database property type is not correct. " +
+                            $"Attempted type : DateTime but got {value.GetType()}(Value:{value}). " +
+                            $"Please contact the administrator.");
+                    machine.InfosStreamX.LastInstallation = dtLastInstall;
                     break;
                 case CSystemProperties.HARDWARE_MANUFACTURERNAME:
                     machine.InfosMachine.ManufacturerName = value;
@@ -96,45 +106,29 @@ namespace StreamScan.Helpers
         /// <returns></returns>
         public static Dictionary<int, Object> GetMachineProperties(Info machine)
         {
-            Dictionary<int, Object> properties = new Dictionary<int, object>
-            {
-                { CSystemProperties.STREAMX_VERSION,           machine.InfosStreamX.Version },
-                { CSystemProperties.STREAMX_FILENAME,          machine.InfosStreamX.Filename },
-                { CSystemProperties.STREAMX_FIRSTINSTALLATION, machine.InfosStreamX.FirstInstallation },
-                { CSystemProperties.STREAMX_LASTINSTALLATION,  machine.InfosStreamX.LastInstallation },
-                { CSystemProperties.HARDWARE_MANUFACTURERNAME, machine.InfosMachine.ManufacturerName },
-                { CSystemProperties.HARDWARE_PRODUCTNAME,      machine.InfosMachine.ProductName },
-                { CSystemProperties.HARDWARE_PRODUCTTYPE,      machine.InfosMachine.ProductType },
-                { CSystemProperties.SOFTWARE_OS,               machine.InfosMachine.ProductNameOs },
-                { CSystemProperties.SOFTWARE_CPUARCHITECTURE,  machine.InfosMachine.CpuArchitecture },
-                { CSystemProperties.SOFTWARE_EDITION,          machine.InfosMachine.Edition },
-                { CSystemProperties.SOFTWARE_PLATFORMID,       machine.InfosMachine.PlatformID },
-                { CSystemProperties.SOFTWARE_SERVICEPACK,      machine.InfosMachine.ServicePack },
-                { CSystemProperties.SOFTWARE_VERSION,          machine.InfosMachine.Version },
-                { CSystemProperties.NETWORK_HOSTNAME,          machine.InfosReseau.HostName },
-                { CSystemProperties.NETWORK_IP,                machine.InfosReseau.IpAddress },
-                { CSystemProperties.NETWORK_CARDNAME,          machine.InfosReseau.CardName },
-                { CSystemProperties.NETWORK_DOMAINNAME,        machine.InfosReseau.DomainName },
-                { CSystemProperties.NETWORK_GATEWAY,           machine.InfosReseau.Gateway },
-                { CSystemProperties.NETWORK_SUBNETMASK,        machine.InfosReseau.SubnetMask }
-            };
-            return properties;
-        }
-
-        public static string ObjectToXml(Object obj)
-        {
-            XmlSerializer xsSubmit = new XmlSerializer(obj.GetType());
-            var xml = "";
-
-            using (var sww = new StringWriter())
-            {
-                using (XmlWriter writer = XmlWriter.Create(sww))
-                {
-                    xsSubmit.Serialize(writer, obj);
-                    xml = sww.ToString();
-                }
-            }
-            return xml;
+Dictionary<int, Object> properties = new Dictionary<int, object>
+{
+    { CSystemProperties.STREAMX_VERSION,           machine.InfosStreamX.Version },
+    { CSystemProperties.STREAMX_FILENAME,          machine.InfosStreamX.Filename },
+    { CSystemProperties.STREAMX_FIRSTINSTALLATION, machine.InfosStreamX.FirstInstallation },
+    { CSystemProperties.STREAMX_LASTINSTALLATION,  machine.InfosStreamX.LastInstallation },
+    { CSystemProperties.HARDWARE_MANUFACTURERNAME, machine.InfosMachine.ManufacturerName },
+    { CSystemProperties.HARDWARE_PRODUCTNAME,      machine.InfosMachine.ProductName },
+    { CSystemProperties.HARDWARE_PRODUCTTYPE,      machine.InfosMachine.ProductType },
+    { CSystemProperties.SOFTWARE_OS,               machine.InfosMachine.ProductNameOs },
+    { CSystemProperties.SOFTWARE_CPUARCHITECTURE,  machine.InfosMachine.CpuArchitecture },
+    { CSystemProperties.SOFTWARE_EDITION,          machine.InfosMachine.Edition },
+    { CSystemProperties.SOFTWARE_PLATFORMID,       machine.InfosMachine.PlatformID },
+    { CSystemProperties.SOFTWARE_SERVICEPACK,      machine.InfosMachine.ServicePack },
+    { CSystemProperties.SOFTWARE_VERSION,          machine.InfosMachine.Version },
+    { CSystemProperties.NETWORK_HOSTNAME,          machine.InfosReseau.HostName },
+    { CSystemProperties.NETWORK_IP,                machine.InfosReseau.IpAddress },
+    { CSystemProperties.NETWORK_CARDNAME,          machine.InfosReseau.CardName },
+    { CSystemProperties.NETWORK_DOMAINNAME,        machine.InfosReseau.DomainName },
+    { CSystemProperties.NETWORK_GATEWAY,           machine.InfosReseau.Gateway },
+    { CSystemProperties.NETWORK_SUBNETMASK,        machine.InfosReseau.SubnetMask }
+};
+return properties;
         }
     }
 }

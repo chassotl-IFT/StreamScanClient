@@ -69,8 +69,6 @@ C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\System.We
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\System.Web.Webpages.Razor.dll
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\WebGrease.dll
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\MySql.Data.dll
-C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\StreamScanConnect.pdb
-C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\StreamScanConnect.dll.config
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\Antlr3.Runtime.pdb
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\HtmlAgilityPack.pdb
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\HtmlAgilityPack.xml
@@ -85,6 +83,3 @@ C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\System.We
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\System.Web.Mvc.xml
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\obj\Debug\StreamScan.dll
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\obj\Debug\StreamScan.pdb
-C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\QueriesManager.pdb
-C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\QueriesManager.dll.config
-C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScan\bin\StreamScanCommon.pdb

@@ -49,12 +49,12 @@ namespace StreamScan.Controllers
                 if (sqlR.ErrorMessage != "")
                 {
                     TempData["Exception_Message"] = sqlR.ErrorMessage;
-                    return Redirect("/Error");
+                    return Redirect(Url.Action("Index", "Error", null));
                 }
                 if (sqlR.IsOk)
                 {
                     TempData["Message"] = "The enterprise has been added successfully";
-                    return Redirect("/Enterprises");
+                    return Redirect(Url.Action("Index", "Enterprises",null));
                 }
                 else
                 {
@@ -88,16 +88,16 @@ namespace StreamScan.Controllers
                 if (sqlR.ErrorMessage != "")
                 {
                     TempData["Exception_Message"] = sqlR.ErrorMessage;
-                    return Redirect("/Error");
+                    return Redirect(Url.Action("Index", "Error", null));
                 }
                 if (sqlR.IsOk)
                 {
                     TempData["Message"] = "The enterprise has been updated successfully";
-                    return Redirect("/Enterprises");
+                    return Redirect(Url.Action("Index", "Enterprises", null));
                 }
                 else
                 {
-                    TempData["Error"] = "An error occured during the update. If this error still coming please go back to the enterprises list and re-update this enterprise.";
+                    TempData["Error"] = "An error occured during the update. Maybe this enterprise has been deleted or someone updated it during your request. Please go back to the enterprises list and retry.";
                 }
             }
             return View(model);
@@ -114,17 +114,17 @@ namespace StreamScan.Controllers
             if (sqlR.ErrorMessage != "")
             {
                 TempData["Exception_Message"] = sqlR.ErrorMessage;
-                return Redirect("/Error");
+                return Redirect(Url.Action("Index", "Error", null));
             }
             if (sqlR.IsOk)
             {
                 TempData["Message"] = "The enterprise has been deleted successfully";
-                return Redirect("/Enterprises");
+                return Redirect(Url.Action("Index", "Enterprises", null));
             }
             else
             {
                 TempData["Error"] = "An error occured during the deletion";
-                return Redirect("/Enterprises");
+                return Redirect(Url.Action("Index", "Enterprises", null));
             }
         }
     }

@@ -17,3 +17,10 @@ C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\bin\De
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\obj\Debug\StreamScanConnect.csprojResolveAssemblyReference.cache
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\obj\Debug\StreamScanConnect.dll
 C:\Users\Laurent\Desktop\StreamScan - Client\StreamScan\StreamScanConnect\obj\Debug\StreamScanConnect.pdb
+C:\Users\Laurent\Desktop\StreamScan - Client\TestsTechnologiques\StreamScanConnect\bin\Debug\StreamScanConnect.dll.config
+C:\Users\Laurent\Desktop\StreamScan - Client\TestsTechnologiques\StreamScanConnect\bin\Debug\StreamScanConnect.dll
+C:\Users\Laurent\Desktop\StreamScan - Client\TestsTechnologiques\StreamScanConnect\bin\Debug\StreamScanConnect.pdb
+C:\Users\Laurent\Desktop\StreamScan - Client\TestsTechnologiques\StreamScanConnect\bin\Debug\StreamScanCommon.dll
+C:\Users\Laurent\Desktop\StreamScan - Client\TestsTechnologiques\StreamScanConnect\obj\Debug\StreamScanConnect.csprojResolveAssemblyReference.cache
+C:\Users\Laurent\Desktop\StreamScan - Client\TestsTechnologiques\StreamScanConnect\obj\Debug\StreamScanConnect.dll
+C:\Users\Laurent\Desktop\StreamScan - Client\TestsTechnologiques\StreamScanConnect\obj\Debug\StreamScanConnect.pdb

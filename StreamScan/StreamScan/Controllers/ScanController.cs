@@ -46,7 +46,7 @@ namespace StreamScan.Controllers
             {
                 //throw new Exception("Please select an enterprise");
                 TempData["Exception_Message"] = "Please select an enterprise";
-                return Redirect("/Error/AjaxError");
+                return Redirect(Url.Action("AjaxError", "Error", null));
             }
             List<Facility> facilities = dal.GetFacilities(enterprise);
             facilities.Insert(0, new Facility { Name = "Select a facility...", Id = 0 });
@@ -65,13 +65,13 @@ namespace StreamScan.Controllers
             {
                 //throw new Exception("Please select a facility");
                 TempData["Exception_Message"] = "Please select a facility";
-                return Redirect("/Error/AjaxError");
+                return Redirect(Url.Action("AjaxError", "Error", null));
             }
             if (MachineAddress == "")
             {
                 //throw new Exception("Please enter an address");
                 TempData["Exception_Message"] = "Please enter an address";
-                return Redirect("/Error/AjaxError");
+                return Redirect(Url.Action("AjaxError", "Error", null));
             }
             Session["facilityId"] = facility;
             bool ok = ClientWCF.CheckStatus(String.Format("http://{0}:{1}/{2}", MachineAddress, ClientWCF.defaultPort, ClientWCF.defaultServiceName));
@@ -79,7 +79,7 @@ namespace StreamScan.Controllers
             {
                // throw new Exception("No server has been found to this address");
                 TempData["Exception_Message"] = "No server has been found to this address";
-                return Redirect("/Error/AjaxError");
+                return Redirect(Url.Action("AjaxError", "Error", null));
             }
             ClientWCF wcf = new ClientWCF();
             wcf.InitClient(MachineAddress);
@@ -97,7 +97,7 @@ namespace StreamScan.Controllers
             {
                 //throw new Exception("The connection has ended. Please reconnect to the server");
                 TempData["Exception_Message"] = "The connection has ended. Please reconnect to the server";
-                return Redirect("/Error/AjaxError");
+                return Redirect(Url.Action("AjaxError", "Error", null));
             }
             Object infos = wcf.SendMessage("GetInfos");
             if (infos.GetType() == typeof(string))
@@ -117,7 +117,7 @@ namespace StreamScan.Controllers
             if (infos == null)
             {
                 TempData["Exception_Message"] = "The connection has ended. Please reconnect to the server";
-                return Redirect("/Error");
+                return Redirect(Url.Action("Index", "Error", null));
             }
             int facility = (int)Session["facilityId"];
             MySqlReturn sqlR = dal.InsertMachine(facility, infos);
@@ -130,7 +130,7 @@ namespace StreamScan.Controllers
             }
             else
                 TempData["Message"] = "The machine has been inserted !";
-            return Redirect("/");
+            return Redirect("~/");
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace StreamScan.Controllers
             if (infos == null)
             {
                 TempData["Exception_Message"] = "The connection has ended. Please re-scan the machine to update it correctly.";
-                return Redirect("/Error");
+                return Redirect(Url.Action("Index", "Error", null));
             }
             MySqlReturn sqlR;
             if (systemId != null)
@@ -165,7 +165,7 @@ namespace StreamScan.Controllers
             }
             else
                 TempData["Message"] = "The machine has been updated !";
-            return Redirect("/");
+            return Redirect("~/");
         }
     }
 }

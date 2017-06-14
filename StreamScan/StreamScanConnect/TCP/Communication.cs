@@ -9,7 +9,6 @@ using System.Net;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using Infos;
 
 namespace StreamScanConnect
 {
@@ -42,7 +41,7 @@ namespace StreamScanConnect
                 }
                 else { onStop(this, new EventArgs()); }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Connexion au serveur perdue
                 throw new Exception("Connexion au serveur perdue");
@@ -57,7 +56,7 @@ namespace StreamScanConnect
                 writer.AutoFlush = true;
                 writer.WriteLine(msg);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }

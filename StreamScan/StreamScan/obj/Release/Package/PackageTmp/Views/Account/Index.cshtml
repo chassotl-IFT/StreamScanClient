@@ -1,0 +1,27 @@
+﻿@model StreamScan.Models.Login
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Login";
+}
+<script>
+    //Sélectionne le bon menu dans la barre de navigation
+    document.querySelectorAll(".nv-login").forEach(function (el) { el.className += " active"; })
+</script>
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        You are already authenticated.
+    </p>
+}
+else
+{
+    using (var form = Html.Bootstrap().Form().AddCss(Css.ColMd6, Css.Row).Begin())
+    {
+        @form.InputFor(m => m.Username).AddLabelCss("required")
+        @Html.ValidationMessageFor(m => m.Username)
+        @form.InputFor(m => m.Password, FormInputType.Password).AddLabelCss("required")
+        @Html.ValidationMessageFor(m => m.Password)
+
+        @form.Submit("Login");
+    }
+}

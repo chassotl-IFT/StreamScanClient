@@ -32,12 +32,22 @@ namespace StreamScan.Models
             //On parcours les lignes retournées et on construit une liste de Enterprise
             foreach (List<string> line in sqlR.Data)
             {
+                int id;
+                if (!Int32.TryParse(line[0], out id))
+                    throw new Exception($"A database property type is not correct. " +
+                        $"Attempted type : Int32 but got {line[0].GetType()}(Value:{line[0]}). " +
+                        $"Please contact the administrator.");
+                int npa;
+                if (!Int32.TryParse(line[3], out npa))
+                    throw new Exception($"A database property type is not correct. " +
+                        $"Attempted type : Int32 but got {line[3].GetType()}(Value:{line[3]}). " +
+                        $"Please contact the administrator.");
                 enterprises.Add(new Enterprise
                 {
-                    Id = Int32.Parse(line[0]),
+                    Id = id,
                     Name = line[1],
                     Address = line[2],
-                    Npa = Int32.Parse(line[3]),
+                    Npa = npa,
                     City = line[4]
                 });
             }
@@ -55,14 +65,29 @@ namespace StreamScan.Models
             MySqlReturn sqlR = db.ExecuteQuery(CEnterprises.GET_ENTERPRISE, parameters);
             if (sqlR.ErrorMessage != "")
                 throw new Exception(sqlR.ErrorMessage);
+            int id;
+            if (!Int32.TryParse(sqlR.Data[0][0], out id))
+                throw new Exception($"A database property type is not correct. " +
+                    $"Attempted type : Int32 but got {sqlR.Data[0][0].GetType()}(Value:{sqlR.Data[0][0]}). " +
+                    $"Please contact the administrator.");
+            int npa;
+            if (!Int32.TryParse(sqlR.Data[0][3], out npa))
+                throw new Exception($"A database property type is not correct. " +
+                    $"Attempted type : Int32 but got {sqlR.Data[0][3].GetType()}(Value:{sqlR.Data[0][3]}). " +
+                    $"Please contact the administrator.");
+            int version;
+            if (!Int32.TryParse(sqlR.Data[0][5], out version))
+                throw new Exception($"A database property type is not correct. " +
+                    $"Attempted type : Int32 but got {sqlR.Data[0][5].GetType()}(Value:{sqlR.Data[0][5]}). " +
+                    $"Please contact the administrator.");
             Enterprise enterpriseObj = new Enterprise
             {
-                Id = Int32.Parse(sqlR.Data[0][0]),
+                Id = id,
                 Name = sqlR.Data[0][1],
                 Address = sqlR.Data[0][2],
-                Npa = Int32.Parse(sqlR.Data[0][3]),
+                Npa = npa,
                 City = sqlR.Data[0][4],
-                Version = Int32.Parse(sqlR.Data[0][5])
+                Version = version
             };
             return enterpriseObj;
         }

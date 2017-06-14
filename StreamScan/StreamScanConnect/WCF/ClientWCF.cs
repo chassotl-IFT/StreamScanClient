@@ -49,7 +49,7 @@ namespace StreamScanConnect
         public void InitClient(string ip, int port, string serviceName)
         {
             BasicHttpBinding myBinding = new BasicHttpBinding();
-            EndpointAddress myEndpoint = new EndpointAddress(String.Format("http://{0}:{1}/{2}", ip, port, serviceName));
+            EndpointAddress myEndpoint = new EndpointAddress($"http://{ip}:{port}/{serviceName}");
             ChannelFactory<IStreamScanInfos> myChannelFactory = new ChannelFactory<IStreamScanInfos>(myBinding, myEndpoint);
 
             client = myChannelFactory.CreateChannel();
@@ -86,7 +86,7 @@ namespace StreamScanConnect
                 }
 
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 return "Méthode inconnue. Tapez \"help\" pour obtenir la liste des méthodes disponibles.";
             }
@@ -106,7 +106,7 @@ namespace StreamScanConnect
                 var response = (HttpWebResponse)myRequest.GetResponse();
                 status = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 status = false;
             }

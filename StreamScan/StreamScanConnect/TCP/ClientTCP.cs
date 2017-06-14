@@ -32,7 +32,7 @@ namespace StreamScanConnect
 
                 com.onStop += com_onStop;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
@@ -56,7 +56,7 @@ namespace StreamScanConnect
                 status = true;
                 client.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             return status;
